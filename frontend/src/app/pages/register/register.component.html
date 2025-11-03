@@ -1,0 +1,14 @@
+<div class="register-form">
+  <h2>Реєстрація</h2>
+  <form (ngSubmit)="register()" #form="ngForm">
+
+    <input type="text" name="name" [(ngModel)]="name" placeholder="Ім'я" required>
+    <input type="text" name="surname" [(ngModel)]="surname" placeholder="Прізвище" required>
+    <input type="email" name="email" [(ngModel)]="email" placeholder="Email" required>
+    <input type="password" name="password" [(ngModel)]="password" placeholder="Пароль" required>
+
+    <button type="submit" [disabled]="form.invalid">Зареєструватись</button>
+  </form>
+
+  <p *ngIf="message">{{ message }}</p>
+</div>
