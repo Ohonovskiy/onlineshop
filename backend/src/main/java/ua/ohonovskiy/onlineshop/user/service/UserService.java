@@ -1,6 +1,8 @@
 package ua.ohonovskiy.onlineshop.user.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import ua.ohonovskiy.onlineshop.user.model.User;
 import ua.ohonovskiy.onlineshop.user.repository.UserRepository;
@@ -27,5 +29,11 @@ public class UserService {
 
     public Optional<User> getByEmail(String email) {
         return userRepository.getReferenceByEmail(email);
+    }
+
+    public User getCurrentUser() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.getReferenceByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 }

@@ -32,4 +32,23 @@ public class ProductController {
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+        productService.deleteById(id);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Void> updateProduct(
+            Long productId,
+            @RequestPart("product") ProductDTO productDTO,
+            @RequestPart(value = "imageFiles") List<MultipartFile> imageFiles) {
+
+        productDTO.setImageFiles(imageFiles);
+        productService.update(productId, productDTO);
+
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 }
