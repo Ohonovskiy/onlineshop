@@ -1,6 +1,7 @@
 package ua.ohonovskiy.onlineshop.product.service.productImage;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ua.ohonovskiy.onlineshop.product.model.product.Product;
@@ -12,12 +13,16 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class ProductImageService {
+
+    @Value("${app.upload-dir}")
+    private String uploadDir;
 
     private final ProductRepository productRepository;
     private final ProductImageRepository productImageRepository;
@@ -26,7 +31,7 @@ public class ProductImageService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
-        String folder = "uploads/products/" + productId;
+        String folder = uploadDir+"/products/" + productId;
         try {
             Files.createDirectories(Paths.get(folder));
             String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
@@ -38,10 +43,20 @@ public class ProductImageService {
                     .product(product)
                     .build();
 
+            product.addProductImage(image);
+
             return productImageRepository.save(image);
         } catch (IOException e) {
             throw new RuntimeException("Failed to save image", e);
         }
+    }
+
+    public List<ProductImage> addImage(Long productId, List<MultipartFile> files) {
+        List<ProductImage> result = new ArrayList<>();
+        for (MultipartFile f : files) {
+            result.add(addImage(productId, f));
+        }
+        return result;
     }
 
     public List<ProductImage> getImagesByProduct(Long productId) {

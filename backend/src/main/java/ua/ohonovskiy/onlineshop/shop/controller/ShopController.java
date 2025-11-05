@@ -18,7 +18,7 @@ public class ShopController {
         this.shopService = shopService;
     }
 
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<Void> create(@RequestBody ShopDTO shopDTO) {
         shopService.createForCurrentUser(shopDTO);
 
