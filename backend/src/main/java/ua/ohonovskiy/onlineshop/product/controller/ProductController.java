@@ -47,7 +47,7 @@ public class ProductController {
             @RequestPart(value = "imageFiles") List<MultipartFile> imageFiles) {
 
         productDTO.setImageFiles(imageFiles);
-        productService.update(productId, productDTO);
+        productService.updateForCurrentUser(productId, productDTO);
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }
