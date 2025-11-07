@@ -13,7 +13,6 @@ import ua.ohonovskiy.onlineshop.product.service.category.CategoryService;
 import ua.ohonovskiy.onlineshop.product.service.productImage.ProductImageService;
 import ua.ohonovskiy.onlineshop.shop.model.Shop;
 import ua.ohonovskiy.onlineshop.user.service.UserService;
-import ua.ohonovskiy.onlineshop.util.model.SimpleEntityModel;
 
 import java.util.List;
 import java.util.Optional;
@@ -57,7 +56,7 @@ public class ProductService {
 
         deleteById(id);
     }
-    private void deleteById(Long id) {
+    public void deleteById(Long id) {
         productImageService.deleteAllByProduct(id);
         productRepository.deleteById(id);
     }
@@ -91,7 +90,7 @@ public class ProductService {
         update(productId, productDTO);
     }
 
-    private void update(Long productId, ProductDTO productDTO) {
+    public void update(Long productId, ProductDTO productDTO) {
         Product product = productDTOtoProduct(productDTO, userService.getCurrentUser().getShop());
         product.setId(productId);
 

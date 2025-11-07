@@ -23,7 +23,7 @@ public class User extends SimpleEntityModel {
 
     private boolean enabled;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "owner")
     private Shop shop;
 
     @Enumerated(value = EnumType.STRING)
