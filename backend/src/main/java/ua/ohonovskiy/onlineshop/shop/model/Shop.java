@@ -8,12 +8,12 @@ import ua.ohonovskiy.onlineshop.util.model.SimpleEntityModel;
 
 import java.util.List;
 
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, exclude = {"owner", "products"})
 @Entity
 @Builder
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Data
 public class Shop extends SimpleEntityModel {
     private String name;
 

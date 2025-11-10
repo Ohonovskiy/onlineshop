@@ -8,11 +8,11 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import ua.ohonovskiy.onlineshop.util.model.SimpleEntityModel;
 
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, exclude = {"parent"})
 @Entity
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
 public class Category extends SimpleEntityModel {
     private String name;
 

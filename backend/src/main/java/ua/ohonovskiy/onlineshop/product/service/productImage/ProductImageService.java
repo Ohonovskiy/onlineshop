@@ -10,9 +10,12 @@ import ua.ohonovskiy.onlineshop.product.repository.product.ProductRepository;
 import ua.ohonovskiy.onlineshop.product.repository.productImage.ProductImageRepository;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -81,5 +84,35 @@ public class ProductImageService {
         }
         productImageRepository.deleteAll(images);
     }
+
+    public void importImages(Product product, List<String> imageUrls) {
+        String folder = uploadDir + "/products/" + product.getId();
+
+        for (String imageUrl : imageUrls) {
+            try (InputStream in = new URL(imageUrl).openStream()) {
+                Files.createDirectories(Paths.get(folder));
+
+                String extension = imageUrl.contains(".") ?
+                        imageUrl.substring(imageUrl.lastIndexOf('.')) : ".jpg";
+
+                String filename = UUID.randomUUID() + extension;
+                Path filePath = Paths.get(folder, filename);
+
+                Files.copy(in, filePath, StandardCopyOption.REPLACE_EXISTING);
+
+                ProductImage image = ProductImage.builder()
+                        .imageUrl("/" + filePath.toString().replace("\\", "/"))
+                        .product(product)
+                        .build();
+
+                product.addProductImage(image);
+                productImageRepository.save(image);
+
+            } catch (IOException e) {
+                System.err.println("❌ Failed to download image: " + imageUrl + " → " + e.getMessage());
+            }
+        }
+    }
+
 }
 

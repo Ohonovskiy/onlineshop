@@ -3,10 +3,7 @@ package ua.ohonovskiy.onlineshop.synchronize.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ua.ohonovskiy.onlineshop.synchronize.service.SynchronizeService;
 
 @RestController
@@ -19,6 +16,13 @@ public class SynchronizeController {
     @PostMapping("/import-file")
     public ResponseEntity<Void> postImportFile(@RequestBody String xmlURL) {
         synchronizeService.setImportFileForCurrentUser(xmlURL);
+
+        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+    }
+
+    @PostMapping("/import")
+    public ResponseEntity<Void> makeImport() {
+        synchronizeService.makeImportForCurrentUser();
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }

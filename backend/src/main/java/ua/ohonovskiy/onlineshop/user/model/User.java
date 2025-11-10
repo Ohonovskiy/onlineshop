@@ -6,11 +6,11 @@ import ua.ohonovskiy.onlineshop.shop.model.Shop;
 import ua.ohonovskiy.onlineshop.user.enums.Role;
 import ua.ohonovskiy.onlineshop.util.model.SimpleEntityModel;
 
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, exclude = {"shop"})
 @Entity
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
 public class User extends SimpleEntityModel {
 
     private String name;

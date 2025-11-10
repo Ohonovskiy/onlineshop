@@ -23,12 +23,16 @@ public class UserService {
         return userRepository.getReferenceById(id);
     }
 
-    public void save(User user) {
-        userRepository.save(user);
+    public User save(User user) {
+        return userRepository.save(user);
     }
 
     public Optional<User> getByEmail(String email) {
         return userRepository.getReferenceByEmail(email);
+    }
+
+    public List<User> getAllShopOwners() {
+        return userRepository.getAllByShopNotNull();
     }
 
     public User getCurrentUser() {

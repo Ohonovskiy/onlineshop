@@ -27,8 +27,8 @@ public class ProductService {
     private final CategoryService categoryService;
     private final UserService userService;
 
-    public void save(Product product) {
-        productRepository.save(product);
+    public Product save(Product product) {
+       return productRepository.save(product);
     }
 
     public Optional<Product> getById(Long id) {

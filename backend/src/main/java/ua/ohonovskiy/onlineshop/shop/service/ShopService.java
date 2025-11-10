@@ -20,8 +20,8 @@ public class ShopService {
     private final UserService userService;
 
     @Transactional
-    public void save(Shop shop) {
-        shopRepository.save(shop);
+    public Shop save(Shop shop) {
+        return shopRepository.save(shop);
     }
 
     public void delete(Shop shop) {

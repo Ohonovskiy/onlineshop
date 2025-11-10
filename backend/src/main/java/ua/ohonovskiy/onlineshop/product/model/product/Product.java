@@ -1,9 +1,6 @@
 package ua.ohonovskiy.onlineshop.product.model.product;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.*;
 import ua.ohonovskiy.onlineshop.product.model.category.Category;
 import ua.ohonovskiy.onlineshop.product.model.productImage.ProductImage;
@@ -13,15 +10,17 @@ import ua.ohonovskiy.onlineshop.util.model.SimpleEntityModel;
 import java.util.ArrayList;
 import java.util.List;
 
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, exclude = {"shop", "category"})
 @Entity
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
 @Builder
+@Data
 public class Product extends SimpleEntityModel {
     private String name;
+
+    @Column(columnDefinition = "TEXT")
     private String description;
     private double price;
 

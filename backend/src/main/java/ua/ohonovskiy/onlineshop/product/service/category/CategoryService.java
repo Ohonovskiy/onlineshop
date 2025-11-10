@@ -15,4 +15,12 @@ public class CategoryService {
     public Optional<Category> getById(Long id) {
         return repository.findById(id);
     }
+
+    public Optional<Category> getByName(String name) {
+        return repository.findByName(name);
+    }
+
+    public Category save(Category category) {
+        return repository.save(category);
+    }
 }

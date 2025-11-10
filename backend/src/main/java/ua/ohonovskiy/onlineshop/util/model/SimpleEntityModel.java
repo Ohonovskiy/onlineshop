@@ -6,16 +6,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 import lombok.*;
 
-@AllArgsConstructor
-@NoArgsConstructor
 @MappedSuperclass
-@ToString
-@EqualsAndHashCode(callSuper = false)
+@NoArgsConstructor
+@AllArgsConstructor
 @Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public abstract class SimpleEntityModel {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+    @EqualsAndHashCode.Include
+    protected Long id;
 }
