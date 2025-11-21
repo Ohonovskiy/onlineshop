@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import org.w3c.dom.Document;
@@ -16,68 +17,77 @@ import ua.ohonovskiy.onlineshop.product.service.category.CategoryService;
 import ua.ohonovskiy.onlineshop.product.service.product.ProductService;
 import ua.ohonovskiy.onlineshop.product.service.productImage.ProductImageService;
 import ua.ohonovskiy.onlineshop.shop.model.Shop;
-import ua.ohonovskiy.onlineshop.shop.service.ShopService;
-import ua.ohonovskiy.onlineshop.user.model.User;
-import ua.ohonovskiy.onlineshop.user.service.UserService;
+import ua.ohonovskiy.onlineshop.synchronize.enums.ImportStatus;
+import ua.ohonovskiy.onlineshop.synchronize.model.ImportSubmit;
+import ua.ohonovskiy.onlineshop.synchronize.service.ImportSubmitService;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class SynchronizeService {
 
-    private final UserService userService;
-    private final ShopService shopService;
     private final CategoryService categoryService;
     private final ProductService productService;
     private final ProductImageService productImageService;
+    private final ImportSubmitService importSubmitService;
 
-    public void setImportFileForCurrentUser(String xmlURL) {
-        User user = userService.getCurrentUser();
-        Shop shop = user.getShop();
+    // ================== QUEUE WORKER ==================
 
-        if (shop == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User has no associated shop");
-        }
-
-        shop.setImportFileURL(xmlURL);
-        shopService.save(shop);
-    }
-
+    /**
+     * Перевіряє чергу кожні 3 секунди.
+     * Якщо є ImportSubmit зі статусом ACCEPTED — запускає імпорт.
+     */
+    @Scheduled(fixedDelay = 3000)
     @Transactional
-    public void synchronize() {
-        for(User user : userService.getAllShopOwners()) {
-            importProducts(user);
+    public void checkImportQueue() {
+
+        Optional<ImportSubmit> next = importSubmitService
+                .getEldestAccepted();
+
+        if (next.isEmpty()) {
+            return; // немає задач
         }
+
+        ImportSubmit task = next.get();
+
+        // Блокуємо задачу для інших воркерів
+        task.setImportStatus(ImportStatus.STATUS_PROCESSING);
+        importSubmitService.save(task);
+
+        // Запускаємо асинхронно
+        importProductsAsync(task);
     }
+
+    // ================== ASYNC IMPORT ==================
 
     @Async
     @Transactional
-    public void importProductsAsync(User user) {
-        importProducts(user);
+    public void importProductsAsync(ImportSubmit importSubmit) {
+        importProducts(importSubmit);
     }
 
+    // ================== IMPORT LOGIC ==================
+
     @Transactional
-    public void importProducts(User user) {
-        Shop shop = user.getShop();
+    public void importProducts(ImportSubmit importSubmit) {
+        Shop shop = importSubmit.getShop();
 
         if (shop == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User has no associated shop");
-        }
-        if (shop.getImportFileURL() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Shop has no import file URL");
+            fail(importSubmit, "User shop not found");
         }
 
         String importFileUrl = shop.getImportFileURL();
+        if (importFileUrl == null) {
+            fail(importSubmit, "Shop import URL missing");
+        }
 
         try (InputStream input = new URL(importFileUrl).openStream()) {
+
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setNamespaceAware(false);
             factory.setValidating(false);
@@ -87,30 +97,31 @@ public class SynchronizeService {
             Document doc = builder.parse(input);
             doc.getDocumentElement().normalize();
 
-            // === 1. Створюємо всі категорії без parent ===
+            // === 1. Категорії (базове створення)
             NodeList categoryNodes = doc.getElementsByTagName("category");
             Map<Long, Category> categoryMap = new HashMap<>();
 
             for (int i = 0; i < categoryNodes.getLength(); i++) {
                 Element categoryElement = (Element) categoryNodes.item(i);
-                Long categoryId = Long.parseLong(categoryElement.getAttribute("id"));
+                Long id = Long.parseLong(categoryElement.getAttribute("id"));
                 String name = categoryElement.getTextContent().trim();
 
-                Category category = categoryService.getByName(name)
+                Category c = categoryService.getByName(name)
                         .orElseGet(() -> categoryService.save(new Category(name, null)));
 
-                categoryMap.put(categoryId, category);
+                categoryMap.put(id, c);
             }
 
-            // === 2. Другий прохід — оновлюємо parent ===
+            // === 2. Категорії (встановлюємо parent)
             for (int i = 0; i < categoryNodes.getLength(); i++) {
-                Element categoryElement = (Element) categoryNodes.item(i);
-                Long categoryId = Long.parseLong(categoryElement.getAttribute("id"));
-                String parentIdAttr = categoryElement.getAttribute("parentId");
+                Element e = (Element) categoryNodes.item(i);
+                Long id = Long.parseLong(e.getAttribute("id"));
+                String parentAttr = e.getAttribute("parentId");
 
-                if (!parentIdAttr.isBlank()) {
-                    Long parentId = Long.parseLong(parentIdAttr);
-                    Category child = categoryMap.get(categoryId);
+                if (!parentAttr.isBlank()) {
+                    Long parentId = Long.parseLong(parentAttr);
+
+                    Category child = categoryMap.get(id);
                     Category parent = categoryMap.get(parentId);
 
                     if (child != null && parent != null && child.getParent() == null) {
@@ -120,21 +131,23 @@ public class SynchronizeService {
                 }
             }
 
-            // === 3. Імпорт товарів ===
+            // === 3. Товари
             NodeList offerNodes = doc.getElementsByTagName("offer");
+
             for (int i = 0; i < offerNodes.getLength(); i++) {
                 Element offer = (Element) offerNodes.item(i);
 
                 String name = getText(offer, "name");
                 String description = getText(offer, "description").replaceAll("<[^>]*>", "").trim();
                 String priceStr = getText(offer, "price");
-                String categoryIdStr = getText(offer, "categoryId");
+                String catStr = getText(offer, "categoryId");
 
-                if (priceStr.isBlank() || categoryIdStr.isBlank()) continue;
+                if (priceStr.isBlank() || catStr.isBlank()) continue;
 
                 double price = Double.parseDouble(priceStr);
-                Long categoryId = Long.parseLong(categoryIdStr);
-                Category category = categoryMap.get(categoryId);
+                Long catId = Long.parseLong(catStr);
+
+                Category category = categoryMap.get(catId);
 
                 Product product = Product.builder()
                         .name(name.length() > 500 ? name.substring(0, 500) : name)
@@ -146,21 +159,26 @@ public class SynchronizeService {
 
                 product = productService.save(product);
 
-                // === Зображення ===
-                NodeList picNodes = offer.getElementsByTagName("picture");
+                // Зображення
+                NodeList pics = offer.getElementsByTagName("picture");
                 List<String> imageUrls = new ArrayList<>();
-                for (int j = 0; j < picNodes.getLength(); j++) {
-                    imageUrls.add(picNodes.item(j).getTextContent().trim());
+
+                for (int j = 0; j < pics.getLength(); j++) {
+                    imageUrls.add(pics.item(j).getTextContent().trim());
                 }
 
                 productImageService.importImages(product, imageUrls);
             }
 
+            // SUCCESS
+            importSubmit.setImportStatus(ImportStatus.STATUS_DONE);
+            importSubmitService.save(importSubmit);
+
         } catch (Exception e) {
-            e.printStackTrace();
+            fail(importSubmit, e.getMessage());
             throw new ResponseStatusException(
                     HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Failed to import products: " + e.getClass().getSimpleName() + " - " + e.getMessage()
+                    "Import failed: " + e.getMessage()
             );
         }
     }
@@ -172,8 +190,8 @@ public class SynchronizeService {
         return node != null ? node.getTextContent().trim() : "";
     }
 
-    @Transactional
-    public void makeImportForCurrentUserAsync() {
-        importProductsAsync(userService.getCurrentUser());
+    private void fail(ImportSubmit submit, String reason) {
+        submit.setImportStatus(ImportStatus.STATUS_FAILED);
+        importSubmitService.save(submit);
     }
 }

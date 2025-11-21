@@ -2,6 +2,7 @@ package ua.ohonovskiy.onlineshop.config.security;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import ua.ohonovskiy.onlineshop.security.jwt.JwtAuthenticationFilter;
 import ua.ohonovskiy.onlineshop.user.service.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
@@ -20,6 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @EnableAsync
 @Configuration
+@EnableScheduling
 @EnableWebSecurity
 @EnableMethodSecurity
 @RequiredArgsConstructor
