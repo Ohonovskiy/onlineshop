@@ -22,7 +22,7 @@ public class SynchronizeController {
 
     @PostMapping("/import")
     public ResponseEntity<Void> makeImport() {
-        synchronizeService.makeImportForCurrentUser();
+        synchronizeService.makeImportForCurrentUserAsync();
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }

@@ -3,6 +3,7 @@ package ua.ohonovskiy.onlineshop.shop.model;
 import jakarta.persistence.*;
 import lombok.*;
 import ua.ohonovskiy.onlineshop.product.model.product.Product;
+import ua.ohonovskiy.onlineshop.synchronize.model.Import;
 import ua.ohonovskiy.onlineshop.user.model.User;
 import ua.ohonovskiy.onlineshop.util.model.SimpleEntityModel;
 
@@ -20,6 +21,10 @@ public class Shop extends SimpleEntityModel {
     private String description;
 
     private String importFileURL;
+
+    @OneToOne
+    @JoinColumn(name = "import_id")
+    private Import anImport;
 
     @OneToOne
     @JoinColumn(name = "owner_id")

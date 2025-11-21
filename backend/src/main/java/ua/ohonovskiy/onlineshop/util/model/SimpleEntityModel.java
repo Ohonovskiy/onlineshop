@@ -1,10 +1,11 @@
 package ua.ohonovskiy.onlineshop.util.model;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.LocalDateTime;
 
 @MappedSuperclass
 @NoArgsConstructor
@@ -16,4 +17,11 @@ public abstract class SimpleEntityModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
     protected Long id;
+
+    @CreationTimestamp
+    @Column(updatable = false)
+    protected LocalDateTime createdOn;
+
+    @UpdateTimestamp
+    protected LocalDateTime updatedOn;
 }

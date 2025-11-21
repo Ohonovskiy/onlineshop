@@ -3,6 +3,7 @@ package ua.ohonovskiy.onlineshop.synchronize.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import org.w3c.dom.Document;
@@ -50,10 +51,17 @@ public class SynchronizeService {
         shopService.save(shop);
     }
 
+    @Transactional
     public void synchronize() {
         for(User user : userService.getAllShopOwners()) {
             importProducts(user);
         }
+    }
+
+    @Async
+    @Transactional
+    public void importProductsAsync(User user) {
+        importProducts(user);
     }
 
     @Transactional
@@ -164,7 +172,8 @@ public class SynchronizeService {
         return node != null ? node.getTextContent().trim() : "";
     }
 
-    public void makeImportForCurrentUser() {
-        importProducts(userService.getCurrentUser());
+    @Transactional
+    public void makeImportForCurrentUserAsync() {
+        importProductsAsync(userService.getCurrentUser());
     }
 }
