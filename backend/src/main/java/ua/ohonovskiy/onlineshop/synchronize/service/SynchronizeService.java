@@ -19,8 +19,6 @@ import ua.ohonovskiy.onlineshop.product.service.productImage.ProductImageService
 import ua.ohonovskiy.onlineshop.shop.model.Shop;
 import ua.ohonovskiy.onlineshop.synchronize.enums.ImportStatus;
 import ua.ohonovskiy.onlineshop.synchronize.model.ImportSubmit;
-import ua.ohonovskiy.onlineshop.synchronize.service.ImportSubmitService;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.InputStream;
@@ -50,7 +48,7 @@ public class SynchronizeService {
                 .getEldestAccepted();
 
         if (next.isEmpty()) {
-            return; // немає задач
+            return;
         }
 
         ImportSubmit task = next.get();

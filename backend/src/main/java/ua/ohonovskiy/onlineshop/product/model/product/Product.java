@@ -29,6 +29,7 @@ public class Product extends SimpleEntityModel {
     private List<ProductImage> productImages = new ArrayList<>();
 
     @ManyToOne
+    @ToString.Exclude
     private Shop shop;
 
     @ManyToOne

@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ua.ohonovskiy.onlineshop.product.DTO.ProductDTO;
+import ua.ohonovskiy.onlineshop.product.model.product.Product;
 import ua.ohonovskiy.onlineshop.product.service.product.ProductService;
 
 import java.util.List;
@@ -18,8 +19,8 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping
-    public String index() {
-        return productService.getAll().toString();
+    public ResponseEntity<List<ProductDTO>> index() {
+        return ResponseEntity.ok(productService.getAllDTO());
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

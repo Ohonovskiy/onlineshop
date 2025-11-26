@@ -14,6 +14,7 @@ import ua.ohonovskiy.onlineshop.product.service.productImage.ProductImageService
 import ua.ohonovskiy.onlineshop.shop.model.Shop;
 import ua.ohonovskiy.onlineshop.user.service.UserService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -99,6 +100,14 @@ public class ProductService {
 
 
 
+    public ProductDTO productToDTO(Product product) {
+        return ProductDTO.builder()
+                .name(product.getName())
+                .price(product.getPrice())
+                .description(product.getDescription())
+                .categoryId(product.getCategory().getId())
+                .build();
+    }
 
     public Product productDTOtoProduct(ProductDTO dto, Shop shop) {
         Category category = categoryService.getById(dto.getCategoryId())
@@ -113,4 +122,13 @@ public class ProductService {
                 .build();
     }
 
+    public List<ProductDTO> getAllDTO() {
+        List<ProductDTO> dtoList = new ArrayList<>();
+
+        for(Product p : productRepository.findAll()) {
+            dtoList.add(productToDTO(p));
+        }
+
+        return dtoList;
+    }
 }
