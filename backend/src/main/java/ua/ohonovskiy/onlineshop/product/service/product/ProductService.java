@@ -106,6 +106,11 @@ public class ProductService {
                 .price(product.getPrice())
                 .description(product.getDescription())
                 .categoryId(product.getCategory().getId())
+                .imgURL(product
+                        .getProductImages()
+                        .get(0)
+                        .getImageUrl()
+                )
                 .build();
     }
 

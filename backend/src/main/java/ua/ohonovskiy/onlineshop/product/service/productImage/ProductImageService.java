@@ -25,24 +25,35 @@ import java.util.UUID;
 public class ProductImageService {
 
     @Value("${app.upload-dir}")
-    private String uploadDir;
+    private String uploadDir;     // Абсолютний шлях на диску, наприклад: C:/.../uploads
+
+    @Value("${app.upload-url:/uploads}")
+    private String uploadUrl;     // Web-корінь, наприклад: /uploads
 
     private final ProductRepository productRepository;
     private final ProductImageRepository productImageRepository;
+
+    // ===================== ПУБЛІЧНІ МЕТОДИ =====================
 
     public ProductImage addImage(Long productId, MultipartFile file) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
-        String folder = uploadDir+"/products/" + productId;
         try {
-            Files.createDirectories(Paths.get(folder));
-            String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
-            Path filePath = Paths.get(folder, filename);
+            Path folder = resolveProductFolder(productId);
+            Files.createDirectories(folder);
+
+            String originalName = file.getOriginalFilename();
+            String extension = getExtension(originalName);
+            String filename = UUID.randomUUID() + extension;
+
+            Path filePath = folder.resolve(filename);
             Files.write(filePath, file.getBytes());
 
+            String webPath = buildWebPath(productId, filename); // шлях, який піде в БД
+
             ProductImage image = ProductImage.builder()
-                    .imageUrl("/" + filePath.toString().replace("\\", "/"))
+                    .imageUrl(webPath)
                     .product(product)
                     .build();
 
@@ -69,9 +80,13 @@ public class ProductImageService {
     public void deleteImage(Long imageId) {
         ProductImage image = productImageRepository.findById(imageId)
                 .orElseThrow(() -> new RuntimeException("Image not found"));
+
         try {
-            Files.deleteIfExists(Paths.get(image.getImageUrl().replaceFirst("/", "")));
-        } catch (IOException ignored) {}
+            Path filePath = resolveFileSystemPath(image.getImageUrl());
+            Files.deleteIfExists(filePath);
+        } catch (IOException ignored) {
+        }
+
         productImageRepository.deleteById(imageId);
     }
 
@@ -79,29 +94,32 @@ public class ProductImageService {
         List<ProductImage> images = productImageRepository.findAllByProduct_Id(productId);
         for (ProductImage img : images) {
             try {
-                Files.deleteIfExists(Paths.get(img.getImageUrl().replaceFirst("/", "")));
-            } catch (IOException ignored) {}
+                Path filePath = resolveFileSystemPath(img.getImageUrl());
+                Files.deleteIfExists(filePath);
+            } catch (IOException ignored) {
+            }
         }
         productImageRepository.deleteAll(images);
     }
 
     public void importImages(Product product, List<String> imageUrls) {
-        String folder = uploadDir + "/products/" + product.getId();
+        Long productId = product.getId();
+        Path folder = resolveProductFolder(productId);
 
         for (String imageUrl : imageUrls) {
             try (InputStream in = new URL(imageUrl).openStream()) {
-                Files.createDirectories(Paths.get(folder));
+                Files.createDirectories(folder);
 
-                String extension = imageUrl.contains(".") ?
-                        imageUrl.substring(imageUrl.lastIndexOf('.')) : ".jpg";
-
+                String extension = getExtension(imageUrl);
                 String filename = UUID.randomUUID() + extension;
-                Path filePath = Paths.get(folder, filename);
 
+                Path filePath = folder.resolve(filename);
                 Files.copy(in, filePath, StandardCopyOption.REPLACE_EXISTING);
 
+                String webPath = buildWebPath(productId, filename);
+
                 ProductImage image = ProductImage.builder()
-                        .imageUrl("/" + filePath.toString().replace("\\", "/"))
+                        .imageUrl(webPath)
                         .product(product)
                         .build();
 
@@ -114,5 +132,57 @@ public class ProductImageService {
         }
     }
 
-}
+    // ===================== ПРИВАТНІ ХЕЛПЕРИ =====================
 
+    /**
+     * Папка для зберігання файлів конкретного продукту на диску.
+     * Приклад: C:/.../uploads/products/5
+     */
+    private Path resolveProductFolder(Long productId) {
+        return Paths.get(uploadDir, "products", String.valueOf(productId));
+    }
+
+    /**
+     * Web-шлях, який ми зберігаємо в БД і віддаємо фронту.
+     * Приклад: /uploads/products/5/filename.jpg
+     */
+    private String buildWebPath(Long productId, String filename) {
+        String base = uploadUrl.startsWith("/") ? uploadUrl : "/" + uploadUrl;
+        return base + "/products/" + productId + "/" + filename;
+    }
+
+    /**
+     * Перетворює web-шлях з БД назад у шлях на файловій системі.
+     * imageUrl:  /uploads/products/5/filename.jpg
+     * uploadUrl: /uploads
+     * →         C:/.../uploads/products/5/filename.jpg
+     */
+    private Path resolveFileSystemPath(String imageUrl) {
+        if (imageUrl == null || imageUrl.isBlank()) {
+            throw new IllegalArgumentException("Image URL is empty");
+        }
+
+        String normalizedImageUrl = imageUrl.startsWith("/") ? imageUrl : "/" + imageUrl;
+        String normalizedUploadUrl = uploadUrl.startsWith("/") ? uploadUrl : "/" + uploadUrl;
+
+        if (!normalizedImageUrl.startsWith(normalizedUploadUrl)) {
+            // Якщо раптом у БД щось інше, кидаємо помилку, щоб не видалити не те
+            throw new IllegalStateException("Image URL " + imageUrl +
+                    " does not start with uploadUrl " + uploadUrl);
+        }
+
+        String relativePart = normalizedImageUrl.substring(normalizedUploadUrl.length()); // /products/5/file.jpg
+        return Paths.get(uploadDir, relativePart);
+    }
+
+    /**
+     * Витягує розширення з імені файлу.
+     * Якщо немає точки — повертає ".jpg".
+     */
+    private String getExtension(String filename) {
+        if (filename == null || !filename.contains(".")) {
+            return ".jpg";
+        }
+        return filename.substring(filename.lastIndexOf('.'));
+    }
+}

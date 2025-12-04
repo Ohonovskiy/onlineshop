@@ -34,12 +34,7 @@ public class SynchronizeService {
     private final ProductImageService productImageService;
     private final ImportSubmitService importSubmitService;
 
-    // ================== QUEUE WORKER ==================
 
-    /**
-     * Перевіряє чергу кожні 3 секунди.
-     * Якщо є ImportSubmit зі статусом ACCEPTED — запускає імпорт.
-     */
     @Scheduled(fixedDelay = 3000)
     @Transactional
     public void checkImportQueue() {

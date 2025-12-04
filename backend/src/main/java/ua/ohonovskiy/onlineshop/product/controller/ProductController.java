@@ -7,10 +7,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ua.ohonovskiy.onlineshop.product.DTO.ProductDTO;
-import ua.ohonovskiy.onlineshop.product.model.product.Product;
 import ua.ohonovskiy.onlineshop.product.service.product.ProductService;
 
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/product")
@@ -21,6 +21,17 @@ public class ProductController {
     @GetMapping
     public ResponseEntity<List<ProductDTO>> index() {
         return ResponseEntity.ok(productService.getAllDTO());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductDTO> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(
+                productService.productToDTO(
+                        Objects.requireNonNull(
+                                productService.getById(id).orElse(null)
+                        )
+                )
+        );
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

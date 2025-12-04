@@ -17,6 +17,7 @@ public class ProductDTO {
     private String description;
     private double price;
     private Long categoryId;
+    private String imgURL;
     private List<MultipartFile> imageFiles;
 }
 
