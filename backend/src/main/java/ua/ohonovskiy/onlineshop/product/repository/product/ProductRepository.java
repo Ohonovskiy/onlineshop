@@ -8,6 +8,4 @@ import java.util.List;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
-    List<Product> findAllByShop_Id(Long shopId);
-    boolean existsByIdAndShopId(Long productId, Long shopId);
 }

@@ -23,7 +23,8 @@ public class User extends SimpleEntityModel {
 
     private boolean enabled;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "owner")
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
     private Shop shop;
 
     @Enumerated(value = EnumType.STRING)

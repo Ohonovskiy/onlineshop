@@ -146,7 +146,6 @@ public class SynchronizeService {
                         .name(name.length() > 500 ? name.substring(0, 500) : name)
                         .description(description)
                         .price(price)
-                        .shop(shop)
                         .category(category)
                         .build();
 

@@ -4,12 +4,11 @@ import jakarta.persistence.*;
 import lombok.*;
 import ua.ohonovskiy.onlineshop.product.model.product.Product;
 import ua.ohonovskiy.onlineshop.synchronize.model.ImportSubmit;
-import ua.ohonovskiy.onlineshop.user.model.User;
 import ua.ohonovskiy.onlineshop.util.model.SimpleEntityModel;
 
 import java.util.List;
 
-@EqualsAndHashCode(callSuper = true, exclude = {"owner", "products"})
+@EqualsAndHashCode(callSuper = true, exclude = {"products"})
 @Entity
 @Builder
 @NoArgsConstructor
@@ -26,10 +25,6 @@ public class Shop extends SimpleEntityModel {
     @JoinColumn(name = "import_id")
     private ImportSubmit ImportSubmit;
 
-    @OneToOne
-    @JoinColumn(name = "owner_id")
-    private User owner;
-
-    @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Product> products;
 }

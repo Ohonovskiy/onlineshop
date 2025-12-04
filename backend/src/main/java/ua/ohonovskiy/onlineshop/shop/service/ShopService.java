@@ -44,7 +44,6 @@ public class ShopService {
         Shop newShop = Shop.builder()
                 .name(shopDTO.getName())
                 .description(shopDTO.getDescription())
-                .owner(currentUser)
                 .build();
 
         shopRepository.save(newShop);

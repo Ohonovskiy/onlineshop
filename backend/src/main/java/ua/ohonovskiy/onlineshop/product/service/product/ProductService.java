@@ -12,6 +12,7 @@ import ua.ohonovskiy.onlineshop.product.repository.product.ProductRepository;
 import ua.ohonovskiy.onlineshop.product.service.category.CategoryService;
 import ua.ohonovskiy.onlineshop.product.service.productImage.ProductImageService;
 import ua.ohonovskiy.onlineshop.shop.model.Shop;
+import ua.ohonovskiy.onlineshop.shop.service.ShopService;
 import ua.ohonovskiy.onlineshop.user.service.UserService;
 
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ public class ProductService {
     private final ProductImageService productImageService;
     private final CategoryService categoryService;
     private final UserService userService;
+    private final ShopService shopService;
 
     public Product save(Product product) {
        return productRepository.save(product);
@@ -41,7 +43,9 @@ public class ProductService {
     }
 
     public List<Product> getAllForShop(Long shopId) {
-        return productRepository.findAllByShop_Id(shopId);
+        return shopService.getById(shopId)
+                .orElseThrow()
+                .getProducts();
     }
 
     /**
@@ -49,14 +53,22 @@ public class ProductService {
      */
     @Transactional
     public void deleteByIdForCurrentUser(Long id) {
-        Long shopId = userService.getCurrentUser().getShop().getId();
 
-        if (!productRepository.existsByIdAndShopId(id, shopId)) {
+        // check if current user owes the product
+        if (userService
+                .getCurrentUser()
+                .getShop()
+                .getProducts()
+                .stream()
+                .noneMatch(p -> p.getId().equals(id)
+                )
+        ) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot delete this product");
         }
 
         deleteById(id);
     }
+
     public void deleteById(Long id) {
         productImageService.deleteAllByProduct(id);
         productRepository.deleteById(id);
@@ -72,7 +84,7 @@ public class ProductService {
         if (shop == null) {
             throw new RuntimeException("User has no associated shop");
         }
-        Product product = productDTOtoProduct(dto, shop);
+        Product product = productDTOtoProduct(dto);
         productRepository.save(product);
         product.setProductImages(productImageService.addImage(product.getId(), dto.getImageFiles()));
 
@@ -82,9 +94,14 @@ public class ProductService {
      *  Update request
      */
     public void updateForCurrentUser(Long productId, ProductDTO productDTO) {
-        Long shopId = userService.getCurrentUser().getShop().getId();
-
-        if (!productRepository.existsByIdAndShopId(productId, shopId)) {
+        if (userService
+                .getCurrentUser()
+                .getShop()
+                .getProducts()
+                .stream()
+                .noneMatch(p -> p.getId().equals(productId)
+                )
+        ) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot delete this product");
         }
 
@@ -92,7 +109,7 @@ public class ProductService {
     }
 
     public void update(Long productId, ProductDTO productDTO) {
-        Product product = productDTOtoProduct(productDTO, userService.getCurrentUser().getShop());
+        Product product = productDTOtoProduct(productDTO);
         product.setId(productId);
 
         save(product);
@@ -114,7 +131,7 @@ public class ProductService {
                 .build();
     }
 
-    public Product productDTOtoProduct(ProductDTO dto, Shop shop) {
+    public Product productDTOtoProduct(ProductDTO dto) {
         Category category = categoryService.getById(dto.getCategoryId())
                 .orElseThrow(() -> new RuntimeException("Category not found"));
 
@@ -122,7 +139,6 @@ public class ProductService {
                 .name(dto.getName())
                 .description(dto.getDescription())
                 .price(dto.getPrice())
-                .shop(shop)
                 .category(category)
                 .build();
     }

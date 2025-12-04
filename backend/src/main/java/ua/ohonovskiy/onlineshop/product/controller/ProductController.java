@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ua.ohonovskiy.onlineshop.product.DTO.ProductDTO;
+import ua.ohonovskiy.onlineshop.product.model.product.Product;
 import ua.ohonovskiy.onlineshop.product.service.product.ProductService;
 
 import java.util.List;
@@ -24,12 +25,10 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductDTO> getById(@PathVariable Long id) {
+    public ResponseEntity<Product> getById(@PathVariable Long id) {
         return ResponseEntity.ok(
-                productService.productToDTO(
-                        Objects.requireNonNull(
-                                productService.getById(id).orElse(null)
-                        )
+                Objects.requireNonNull(
+                        productService.getById(id).orElse(null)
                 )
         );
     }

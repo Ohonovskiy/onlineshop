@@ -4,13 +4,12 @@ import jakarta.persistence.*;
 import lombok.*;
 import ua.ohonovskiy.onlineshop.product.model.category.Category;
 import ua.ohonovskiy.onlineshop.product.model.productImage.ProductImage;
-import ua.ohonovskiy.onlineshop.shop.model.Shop;
 import ua.ohonovskiy.onlineshop.util.model.SimpleEntityModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@EqualsAndHashCode(callSuper = true, exclude = {"shop", "category"})
+@EqualsAndHashCode(callSuper = true, exclude = {"category"})
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -27,10 +26,6 @@ public class Product extends SimpleEntityModel {
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<ProductImage> productImages = new ArrayList<>();
-
-    @ManyToOne
-    @ToString.Exclude
-    private Shop shop;
 
     @ManyToOne
     private Category category;
