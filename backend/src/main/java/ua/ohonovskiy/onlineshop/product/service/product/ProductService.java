@@ -2,6 +2,7 @@ package ua.ohonovskiy.onlineshop.product.service.product;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -46,6 +47,24 @@ public class ProductService {
         return shopService.getById(shopId)
                 .orElseThrow()
                 .getProducts();
+    }
+
+    public List<ProductDTO> getLatest(Integer productsCount) {
+        return productToDTO(productRepository.findAllByOrderByCreatedOnDesc(
+                PageRequest.of(0, productsCount)
+        ));
+    }
+
+    // TODO
+    //  Add formula after [Product views, Orders, ...] implemented
+    public List<ProductDTO> getPopular(Integer productsCount) {
+        return null;
+    }
+
+    // TODO
+    //  Change after Product [OldPrice, NewPrice] implemented
+    public List<ProductDTO> getDiscounted(Integer productsCount) {
+        return null;
     }
 
     /**
@@ -116,6 +135,16 @@ public class ProductService {
     }
 
 
+
+    public List<ProductDTO> productToDTO(List<Product> products) {
+        List<ProductDTO> dtoList = new ArrayList<>();
+
+        for(Product p : products) {
+            dtoList.add(productToDTO(p));
+        }
+
+        return dtoList;
+    }
 
     public ProductDTO productToDTO(Product product) {
         return ProductDTO.builder()
