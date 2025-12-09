@@ -1,8 +1,8 @@
-package ua.ohonovskiy.onlineshop.homepage.service;
+package ua.ohonovskiy.onlineshop.recommendation.service;
 
 import org.springframework.stereotype.Service;
 import ua.ohonovskiy.onlineshop.homepage.DTO.HomePageProductsResponse;
-import ua.ohonovskiy.onlineshop.product.service.product.ProductService;
+import ua.ohonovskiy.onlineshop.product.product.service.ProductService;
 
 @Service
 public class RecommendationService {

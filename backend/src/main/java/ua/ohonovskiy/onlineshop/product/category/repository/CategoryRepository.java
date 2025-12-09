@@ -1,8 +1,8 @@
-package ua.ohonovskiy.onlineshop.product.repository.category;
+package ua.ohonovskiy.onlineshop.product.category.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import ua.ohonovskiy.onlineshop.product.model.category.Category;
+import ua.ohonovskiy.onlineshop.product.category.model.Category;
 
 import java.util.Optional;
 

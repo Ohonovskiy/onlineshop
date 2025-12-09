@@ -1,13 +1,13 @@
-package ua.ohonovskiy.onlineshop.product.service.productImage;
+package ua.ohonovskiy.onlineshop.product.productImage.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import ua.ohonovskiy.onlineshop.product.model.product.Product;
-import ua.ohonovskiy.onlineshop.product.model.productImage.ProductImage;
-import ua.ohonovskiy.onlineshop.product.repository.product.ProductRepository;
-import ua.ohonovskiy.onlineshop.product.repository.productImage.ProductImageRepository;
+import ua.ohonovskiy.onlineshop.product.product.model.Product;
+import ua.ohonovskiy.onlineshop.product.productImage.model.ProductImage;
+import ua.ohonovskiy.onlineshop.product.product.repository.ProductRepository;
+import ua.ohonovskiy.onlineshop.product.productImage.repository.ProductImageRepository;
 
 import java.io.IOException;
 import java.io.InputStream;

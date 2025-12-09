@@ -1,6 +1,6 @@
-package ua.ohonovskiy.onlineshop.product.repository.productImage;
+package ua.ohonovskiy.onlineshop.product.productImage.repository;
 
-import ua.ohonovskiy.onlineshop.product.model.productImage.ProductImage;
+import ua.ohonovskiy.onlineshop.product.productImage.model.ProductImage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

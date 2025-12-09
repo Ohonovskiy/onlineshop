@@ -1,4 +1,4 @@
-package ua.ohonovskiy.onlineshop.product.controller;
+package ua.ohonovskiy.onlineshop.product.product.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -6,9 +6,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import ua.ohonovskiy.onlineshop.product.DTO.ProductDTO;
-import ua.ohonovskiy.onlineshop.product.model.product.Product;
-import ua.ohonovskiy.onlineshop.product.service.product.ProductService;
+import ua.ohonovskiy.onlineshop.product.product.DTO.ProductDTO;
+import ua.ohonovskiy.onlineshop.product.product.model.Product;
+import ua.ohonovskiy.onlineshop.product.product.service.ProductService;
 
 import java.util.List;
 import java.util.Objects;

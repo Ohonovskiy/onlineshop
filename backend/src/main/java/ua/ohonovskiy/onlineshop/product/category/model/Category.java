@@ -1,4 +1,4 @@
-package ua.ohonovskiy.onlineshop.product.model.category;
+package ua.ohonovskiy.onlineshop.product.category.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;

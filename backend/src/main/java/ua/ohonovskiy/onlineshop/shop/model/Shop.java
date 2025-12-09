@@ -2,7 +2,7 @@ package ua.ohonovskiy.onlineshop.shop.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import ua.ohonovskiy.onlineshop.product.model.product.Product;
+import ua.ohonovskiy.onlineshop.product.product.model.Product;
 import ua.ohonovskiy.onlineshop.synchronize.model.ImportSubmit;
 import ua.ohonovskiy.onlineshop.util.model.SimpleEntityModel;
 

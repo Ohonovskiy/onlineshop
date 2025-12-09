@@ -1,4 +1,4 @@
-package ua.ohonovskiy.onlineshop.product.service.product;
+package ua.ohonovskiy.onlineshop.product.product.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -6,17 +6,20 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import ua.ohonovskiy.onlineshop.product.DTO.ProductDTO;
-import ua.ohonovskiy.onlineshop.product.model.category.Category;
-import ua.ohonovskiy.onlineshop.product.model.product.Product;
-import ua.ohonovskiy.onlineshop.product.repository.product.ProductRepository;
-import ua.ohonovskiy.onlineshop.product.service.category.CategoryService;
-import ua.ohonovskiy.onlineshop.product.service.productImage.ProductImageService;
+import ua.ohonovskiy.onlineshop.product.product.DTO.ProductDTO;
+import ua.ohonovskiy.onlineshop.product.category.model.Category;
+import ua.ohonovskiy.onlineshop.product.product.model.Product;
+import ua.ohonovskiy.onlineshop.product.product.repository.ProductRepository;
+import ua.ohonovskiy.onlineshop.product.category.service.CategoryService;
+import ua.ohonovskiy.onlineshop.product.productImage.service.ProductImageService;
+import ua.ohonovskiy.onlineshop.product.productView.service.ProductViewService;
 import ua.ohonovskiy.onlineshop.shop.model.Shop;
 import ua.ohonovskiy.onlineshop.shop.service.ShopService;
 import ua.ohonovskiy.onlineshop.user.service.UserService;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +33,7 @@ public class ProductService {
     private final CategoryService categoryService;
     private final UserService userService;
     private final ShopService shopService;
+    private final ProductViewService productViewService;
 
     public Product save(Product product) {
        return productRepository.save(product);
@@ -41,6 +45,10 @@ public class ProductService {
 
     public List<Product> getAll() {
         return productRepository.findAll();
+    }
+
+    public List<Product> getAllById(List<Long> ids) {
+        return productRepository.findAllById(ids);
     }
 
     public List<Product> getAllForShop(Long shopId) {
@@ -56,9 +64,18 @@ public class ProductService {
     }
 
     // TODO
-    //  Add formula after [Product views, Orders, ...] implemented
+    //  Add more clever formula
     public List<ProductDTO> getPopular(Integer productsCount) {
-        return null;
+        // popular = views/week
+
+        return productToDTO(                            // casting to DTO
+                getAllById(productViewService           // getting models
+                        .getTopMostViewedFrom(          // getting ids for most popular products
+                                productsCount, LocalDateTime.now().minusDays(7)
+                        )
+                )
+        );
+
     }
 
     public List<ProductDTO> getTopDiscounted(Integer productsCount) {

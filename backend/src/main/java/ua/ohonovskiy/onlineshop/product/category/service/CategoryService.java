@@ -1,9 +1,9 @@
-package ua.ohonovskiy.onlineshop.product.service.category;
+package ua.ohonovskiy.onlineshop.product.category.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ua.ohonovskiy.onlineshop.product.model.category.Category;
-import ua.ohonovskiy.onlineshop.product.repository.category.CategoryRepository;
+import ua.ohonovskiy.onlineshop.product.category.model.Category;
+import ua.ohonovskiy.onlineshop.product.category.repository.CategoryRepository;
 
 import java.util.Optional;
 

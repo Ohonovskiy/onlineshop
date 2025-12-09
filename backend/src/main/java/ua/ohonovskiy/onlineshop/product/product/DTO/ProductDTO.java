@@ -1,4 +1,4 @@
-package ua.ohonovskiy.onlineshop.product.DTO;
+package ua.ohonovskiy.onlineshop.product.product.DTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
