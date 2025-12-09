@@ -61,10 +61,10 @@ public class ProductService {
         return null;
     }
 
-    // TODO
-    //  Change after Product [OldPrice, NewPrice] implemented
-    public List<ProductDTO> getDiscounted(Integer productsCount) {
-        return null;
+    public List<ProductDTO> getTopDiscounted(Integer productsCount) {
+        return productToDTO(productRepository.findTopDiscounted(
+                PageRequest.of(0, productsCount)
+        ));
     }
 
     /**

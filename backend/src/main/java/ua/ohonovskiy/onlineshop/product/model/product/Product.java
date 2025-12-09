@@ -22,7 +22,7 @@ public class Product extends SimpleEntityModel {
     @Column(columnDefinition = "TEXT")
     private String description;
     private double price;
-    private double oldPrice;
+    private Double oldPrice;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
@@ -32,11 +32,16 @@ public class Product extends SimpleEntityModel {
     private Category category;
 
     public void setPrice(double price) {
-        if(price > oldPrice) return;
+        if (oldPrice != null && price > oldPrice) {
+            oldPrice = null;
+            this.price = price;
+            return;
+        }
 
         this.oldPrice = this.price;
         this.price = price;
     }
+
 
     public void addProductImage(ProductImage image) {
         image.setProduct(this);

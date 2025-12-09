@@ -17,7 +17,7 @@ public class RecommendationService {
         return HomePageProductsResponse.builder()
                 .newProducts(productService.getLatest(PRODUCT_COUNT))
                 .popularProducts(productService.getPopular(PRODUCT_COUNT))
-                .discountedProducts(productService.getDiscounted(PRODUCT_COUNT))
+                .discountedProducts(productService.getTopDiscounted(PRODUCT_COUNT))
                 .build();
     }
 }
