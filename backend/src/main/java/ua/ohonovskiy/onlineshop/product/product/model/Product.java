@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import ua.ohonovskiy.onlineshop.product.category.model.Category;
 import ua.ohonovskiy.onlineshop.product.productImage.model.ProductImage;
-import ua.ohonovskiy.onlineshop.product.productView.model.ProductView;
 import ua.ohonovskiy.onlineshop.util.model.SimpleEntityModel;
 
 import java.util.ArrayList;
@@ -31,9 +30,6 @@ public class Product extends SimpleEntityModel {
 
     @ManyToOne
     private Category category;
-
-    @OneToMany(fetch = FetchType.LAZY)
-    private List<ProductView> views;
 
     public void setPrice(double price) {
         if (oldPrice != null && price > oldPrice) {

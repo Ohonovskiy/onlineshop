@@ -20,7 +20,7 @@ public class ProductView extends SimpleEntityModel {
     @ManyToOne(fetch = FetchType.LAZY)
     private Product product;
 
-    private String sessionId;
+    private String username;
 
     private LocalDateTime viewedAt;
 }

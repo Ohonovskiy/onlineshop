@@ -6,11 +6,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import ua.ohonovskiy.onlineshop.product.product.DTO.ProductDTO;
 import ua.ohonovskiy.onlineshop.product.category.model.Category;
+import ua.ohonovskiy.onlineshop.product.category.service.CategoryService;
+import ua.ohonovskiy.onlineshop.product.product.DTO.ProductDTO;
 import ua.ohonovskiy.onlineshop.product.product.model.Product;
 import ua.ohonovskiy.onlineshop.product.product.repository.ProductRepository;
-import ua.ohonovskiy.onlineshop.product.category.service.CategoryService;
 import ua.ohonovskiy.onlineshop.product.productImage.service.ProductImageService;
 import ua.ohonovskiy.onlineshop.product.productView.service.ProductViewService;
 import ua.ohonovskiy.onlineshop.shop.model.Shop;
@@ -19,7 +19,6 @@ import ua.ohonovskiy.onlineshop.user.service.UserService;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 

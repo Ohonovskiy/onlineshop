@@ -4,11 +4,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ua.ohonovskiy.onlineshop.product.product.DTO.ProductDTO;
 import ua.ohonovskiy.onlineshop.product.product.model.Product;
 import ua.ohonovskiy.onlineshop.product.product.service.ProductService;
+import ua.ohonovskiy.onlineshop.product.productView.service.ProductViewService;
+
+import jakarta.servlet.http.HttpServletRequest;
+import ua.ohonovskiy.onlineshop.user.model.CustomUserDetails;
 
 import java.util.List;
 import java.util.Objects;
@@ -18,6 +23,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class ProductController {
     private final ProductService productService;
+    private final ProductViewService productViewService;
 
     @GetMapping
     public ResponseEntity<List<ProductDTO>> index() {
@@ -26,12 +32,22 @@ public class ProductController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Product> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(
-                Objects.requireNonNull(
-                        productService.getById(id).orElse(null)
-                )
-        );
+        return productService.getById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
+
+    @PostMapping("/{id}/view")
+    public ResponseEntity<Void> registerView(
+            @PathVariable Long id,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        productViewService.registerView(id, userDetails);
+
+        return ResponseEntity.ok().build();
+    }
+
+
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> createProduct (

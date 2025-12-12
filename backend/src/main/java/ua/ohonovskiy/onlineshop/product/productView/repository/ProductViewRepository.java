@@ -42,12 +42,12 @@ public interface ProductViewRepository extends JpaRepository<ProductView, Long> 
     SELECT COUNT(v)
     FROM ProductView v
     WHERE v.product.id = :productId
-      AND v.sessionId = :sessionId
+      AND v.username = :username
       AND v.viewedAt >= :from
     """)
     long countViews(
             @Param("productId") Long productId,
-            @Param("sessionId") String sessionId,
+            @Param("username") String username,
             @Param("from") LocalDateTime from
     );
 

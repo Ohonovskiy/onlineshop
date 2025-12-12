@@ -7,9 +7,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import ua.ohonovskiy.onlineshop.product.product.model.Product;
 import ua.ohonovskiy.onlineshop.product.product.repository.ProductRepository;
-import ua.ohonovskiy.onlineshop.product.product.service.ProductService;
 import ua.ohonovskiy.onlineshop.product.productView.model.ProductView;
 import ua.ohonovskiy.onlineshop.product.productView.repository.ProductViewRepository;
+import ua.ohonovskiy.onlineshop.user.model.CustomUserDetails;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,7 +20,6 @@ public class ProductViewService {
     private static final int VIEW_INTERVAL_MINUTES = 30;
 
     private final ProductViewRepository productViewRepository;
-    private final ProductService productService;
     private final ProductRepository productRepository;
 
     public long getForProductFrom(Product product, LocalDateTime from) {
@@ -38,32 +37,37 @@ public class ProductViewService {
         );
     }
 
-    public void registerView(Long productId, String sessionId) {
+    public void registerView(Long productId, CustomUserDetails userDetails) {
 
-        if (sessionId == null || sessionId.isBlank()) {
+        if (userDetails == null || userDetails.getUsername() == null) {
             return;
         }
 
-        // Dont register frequent requests
-        if (isRegisteredAlreadyFrom(productId, sessionId, LocalDateTime.now().minusMinutes(VIEW_INTERVAL_MINUTES))) {
+        String username = userDetails.getUsername();
+
+        if (isRegisteredAlreadyFrom(
+                productId,
+                username,
+                LocalDateTime.now().minusMinutes(VIEW_INTERVAL_MINUTES))) {
             return;
         }
-
-        // беремо легкий proxy, не вантажимо продукт повністю
+        
         Product product = productRepository.getReferenceById(productId);
 
         productViewRepository.save(
                 ProductView.builder()
                         .product(product)
-                        .sessionId(sessionId)
+                        .username(username)
                         .viewedAt(LocalDateTime.now())
                         .build()
         );
     }
 
 
-    private boolean isRegisteredAlreadyFrom(Long productId, String sessionId, LocalDateTime from) {
-        return productViewRepository.countViews(productId, sessionId, from) > 0;
+    private boolean isRegisteredAlreadyFrom(Long productId,
+                                            String username,
+                                            LocalDateTime from) {
+        return productViewRepository.countViews(productId, username, from) > 0;
     }
 
     @Transactional
