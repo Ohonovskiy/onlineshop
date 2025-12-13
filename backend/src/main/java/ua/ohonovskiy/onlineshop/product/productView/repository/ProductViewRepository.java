@@ -21,7 +21,7 @@ public interface ProductViewRepository extends JpaRepository<ProductView, Long> 
           AND v.viewedAt >= :from
         """)
     long countViewsForProductFrom(
-            @Param("productId") Long productId,
+            @Param("productId") String productId,
             @Param("from") LocalDateTime from
     );
 
@@ -33,7 +33,7 @@ public interface ProductViewRepository extends JpaRepository<ProductView, Long> 
         GROUP BY v.product.id
         ORDER BY COUNT(v) DESC
     """)
-    List<Long> findPopularProductIdsFrom(
+    List<String> findPopularProductIdsFrom(
             Pageable pageable,
             @Param("from") LocalDateTime from
     );
@@ -46,7 +46,7 @@ public interface ProductViewRepository extends JpaRepository<ProductView, Long> 
       AND v.viewedAt >= :from
     """)
     long countViews(
-            @Param("productId") Long productId,
+            @Param("productId") String productId,
             @Param("username") String username,
             @Param("from") LocalDateTime from
     );

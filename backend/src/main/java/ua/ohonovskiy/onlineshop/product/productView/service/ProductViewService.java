@@ -26,18 +26,18 @@ public class ProductViewService {
         return getForProductFrom(product.getId(), from);
     }
 
-    public long getForProductFrom(Long productId, LocalDateTime from) {
+    public long getForProductFrom(String productId, LocalDateTime from) {
         return productViewRepository.countViewsForProductFrom(productId, from);
     }
 
-    public List<Long> getTopMostViewedFrom(int amount, LocalDateTime from) {
+    public List<String> getTopMostViewedFrom(int amount, LocalDateTime from) {
         return productViewRepository.findPopularProductIdsFrom(
                 PageRequest.of(0, amount),
                 from
         );
     }
 
-    public void registerView(Long productId, CustomUserDetails userDetails) {
+    public void registerView(String productId, CustomUserDetails userDetails) {
 
         if (userDetails == null || userDetails.getUsername() == null) {
             return;
@@ -64,7 +64,7 @@ public class ProductViewService {
     }
 
 
-    private boolean isRegisteredAlreadyFrom(Long productId,
+    private boolean isRegisteredAlreadyFrom(String productId,
                                             String username,
                                             LocalDateTime from) {
         return productViewRepository.countViews(productId, username, from) > 0;

@@ -11,12 +11,9 @@ import ua.ohonovskiy.onlineshop.product.product.DTO.ProductDTO;
 import ua.ohonovskiy.onlineshop.product.product.model.Product;
 import ua.ohonovskiy.onlineshop.product.product.service.ProductService;
 import ua.ohonovskiy.onlineshop.product.productView.service.ProductViewService;
-
-import jakarta.servlet.http.HttpServletRequest;
 import ua.ohonovskiy.onlineshop.user.model.CustomUserDetails;
 
 import java.util.List;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/product")
@@ -31,7 +28,7 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getById(@PathVariable Long id) {
+    public ResponseEntity<Product> getById(@PathVariable String id) {
         return productService.getById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -39,7 +36,7 @@ public class ProductController {
 
     @PostMapping("/{id}/view")
     public ResponseEntity<Void> registerView(
-            @PathVariable Long id,
+            @PathVariable String id,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         productViewService.registerView(id, userDetails);
@@ -61,7 +58,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteProduct(@PathVariable String id) {
         productService.deleteByIdForCurrentUser(id);
 
         return ResponseEntity.noContent().build();
@@ -69,7 +66,7 @@ public class ProductController {
 
     @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> updateProduct(
-            Long productId,
+            String productId,
             @RequestPart("product") ProductDTO productDTO,
             @RequestPart(value = "imageFiles") List<MultipartFile> imageFiles) {
 

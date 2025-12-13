@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import ua.ohonovskiy.onlineshop.product.category.model.Category;
 import ua.ohonovskiy.onlineshop.product.productImage.model.ProductImage;
-import ua.ohonovskiy.onlineshop.util.model.SimpleEntityModel;
+import ua.ohonovskiy.onlineshop.util.model.SimpleEntityModelNoId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +16,11 @@ import java.util.List;
 @ToString
 @Builder
 @Data
-public class Product extends SimpleEntityModel {
+public class Product extends SimpleEntityModelNoId {
+
+    @Id
+    private String id;
+
     private String name;
 
     @Column(columnDefinition = "TEXT")

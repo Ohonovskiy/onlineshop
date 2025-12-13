@@ -9,7 +9,7 @@ import ua.ohonovskiy.onlineshop.product.product.model.Product;
 import java.util.List;
 
 @Repository
-public interface ProductRepository extends JpaRepository<Product, Long> {
+public interface ProductRepository extends JpaRepository<Product, String> {
 
     List<Product> findAllByOrderByCreatedOnDesc(Pageable pageable);
 

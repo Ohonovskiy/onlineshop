@@ -79,6 +79,9 @@ public class SynchronizeService {
             fail(importSubmit, "Shop import URL missing");
         }
 
+        importSubmit.setImportStatus(ImportStatus.STATUS_PROCESSING);
+        importSubmitService.save(importSubmit);
+
         try (InputStream input = new URL(importFileUrl).openStream()) {
 
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -131,6 +134,7 @@ public class SynchronizeService {
                 Element offer = (Element) offerNodes.item(i);
 
                 String name = getText(offer, "name");
+                String article = getText(offer, "article");
                 String description = getText(offer, "description").replaceAll("<[^>]*>", "").trim();
                 String priceStr = getText(offer, "price");
                 String catStr = getText(offer, "categoryId");
@@ -146,6 +150,7 @@ public class SynchronizeService {
                         .name(name.length() > 500 ? name.substring(0, 500) : name)
                         .description(description)
                         .price(price)
+                        .id(article)
                         .category(category)
                         .build();
 

@@ -35,7 +35,7 @@ public class ProductImageService {
 
     // ===================== ПУБЛІЧНІ МЕТОДИ =====================
 
-    public ProductImage addImage(Long productId, MultipartFile file) {
+    public ProductImage addImage(String productId, MultipartFile file) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
@@ -65,7 +65,7 @@ public class ProductImageService {
         }
     }
 
-    public List<ProductImage> addImage(Long productId, List<MultipartFile> files) {
+    public List<ProductImage> addImage(String productId, List<MultipartFile> files) {
         List<ProductImage> result = new ArrayList<>();
         for (MultipartFile f : files) {
             result.add(addImage(productId, f));
@@ -73,7 +73,7 @@ public class ProductImageService {
         return result;
     }
 
-    public List<ProductImage> getImagesByProduct(Long productId) {
+    public List<ProductImage> getImagesByProduct(String productId) {
         return productImageRepository.findAllByProduct_Id(productId);
     }
 
@@ -90,7 +90,7 @@ public class ProductImageService {
         productImageRepository.deleteById(imageId);
     }
 
-    public void deleteAllByProduct(Long productId) {
+    public void deleteAllByProduct(String productId) {
         List<ProductImage> images = productImageRepository.findAllByProduct_Id(productId);
         for (ProductImage img : images) {
             try {
@@ -103,7 +103,7 @@ public class ProductImageService {
     }
 
     public void importImages(Product product, List<String> imageUrls) {
-        Long productId = product.getId();
+        String productId = product.getId();
         Path folder = resolveProductFolder(productId);
 
         for (String imageUrl : imageUrls) {
@@ -138,7 +138,7 @@ public class ProductImageService {
      * Папка для зберігання файлів конкретного продукту на диску.
      * Приклад: C:/.../uploads/products/5
      */
-    private Path resolveProductFolder(Long productId) {
+    private Path resolveProductFolder(String productId) {
         return Paths.get(uploadDir, "products", String.valueOf(productId));
     }
 
@@ -146,7 +146,7 @@ public class ProductImageService {
      * Web-шлях, який ми зберігаємо в БД і віддаємо фронту.
      * Приклад: /uploads/products/5/filename.jpg
      */
-    private String buildWebPath(Long productId, String filename) {
+    private String buildWebPath(String productId, String filename) {
         String base = uploadUrl.startsWith("/") ? uploadUrl : "/" + uploadUrl;
         return base + "/products/" + productId + "/" + filename;
     }

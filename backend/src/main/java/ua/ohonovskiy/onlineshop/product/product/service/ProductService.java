@@ -38,7 +38,7 @@ public class ProductService {
        return productRepository.save(product);
     }
 
-    public Optional<Product> getById(Long id) {
+    public Optional<Product> getById(String id) {
         return productRepository.findById(id);
     }
 
@@ -46,7 +46,7 @@ public class ProductService {
         return productRepository.findAll();
     }
 
-    public List<Product> getAllById(List<Long> ids) {
+    public List<Product> getAllById(List<String> ids) {
         return productRepository.findAllById(ids);
     }
 
@@ -87,7 +87,7 @@ public class ProductService {
      *  Delete request
      */
     @Transactional
-    public void deleteByIdForCurrentUser(Long id) {
+    public void deleteByIdForCurrentUser(String id) {
 
         // check if current user owes the product
         if (userService
@@ -104,7 +104,7 @@ public class ProductService {
         deleteById(id);
     }
 
-    public void deleteById(Long id) {
+    public void deleteById(String id) {
         productImageService.deleteAllByProduct(id);
         productRepository.deleteById(id);
     }
@@ -128,7 +128,7 @@ public class ProductService {
     /**
      *  Update request
      */
-    public void updateForCurrentUser(Long productId, ProductDTO productDTO) {
+    public void updateForCurrentUser(String productId, ProductDTO productDTO) {
         if (userService
                 .getCurrentUser()
                 .getShop()
@@ -143,7 +143,7 @@ public class ProductService {
         update(productId, productDTO);
     }
 
-    public void update(Long productId, ProductDTO productDTO) {
+    public void update(String productId, ProductDTO productDTO) {
         Product product = productDTOtoProduct(productDTO);
         product.setId(productId);
 

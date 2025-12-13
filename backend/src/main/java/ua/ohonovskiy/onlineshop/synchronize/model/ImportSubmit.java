@@ -1,9 +1,7 @@
 package ua.ohonovskiy.onlineshop.synchronize.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.OneToOne;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.*;
 import ua.ohonovskiy.onlineshop.shop.model.Shop;
 import ua.ohonovskiy.onlineshop.synchronize.enums.ImportStatus;
@@ -17,7 +15,9 @@ import ua.ohonovskiy.onlineshop.util.model.SimpleEntityModel;
 @NoArgsConstructor
 public class ImportSubmit extends SimpleEntityModel {
 
-    @OneToOne
+    @ManyToOne
+    @ToString.Exclude
+    @JsonIgnore
     private Shop shop;
 
     @Enumerated(value = EnumType.STRING)

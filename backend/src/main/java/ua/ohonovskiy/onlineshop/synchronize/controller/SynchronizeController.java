@@ -9,6 +9,8 @@ import ua.ohonovskiy.onlineshop.synchronize.model.ImportSubmit;
 import ua.ohonovskiy.onlineshop.synchronize.service.ImportSubmitService;
 import ua.ohonovskiy.onlineshop.synchronize.service.SynchronizeService;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/synchronize")
 @RequiredArgsConstructor
@@ -31,7 +33,7 @@ public class SynchronizeController {
     }
 
     @GetMapping("/import")
-    public ResponseEntity<ImportStatus> getImportInfo() {
-        return ResponseEntity.ok(importSubmitService.getForCurrentUser().getImportStatus());
+    public ResponseEntity<List<ImportSubmit>> getImportInfo() {
+        return ResponseEntity.ok(importSubmitService.getImportSubmitsForCurrentUser());
     }
 }

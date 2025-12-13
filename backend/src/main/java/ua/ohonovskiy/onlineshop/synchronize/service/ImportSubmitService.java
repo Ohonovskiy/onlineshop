@@ -1,7 +1,6 @@
 package ua.ohonovskiy.onlineshop.synchronize.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ua.ohonovskiy.onlineshop.shop.model.Shop;
 import ua.ohonovskiy.onlineshop.shop.service.ShopService;
@@ -11,6 +10,7 @@ import ua.ohonovskiy.onlineshop.synchronize.repository.ImportSubmitRepository;
 import ua.ohonovskiy.onlineshop.user.service.UserService;
 import ua.ohonovskiy.onlineshop.util.exception.ImportNotExistsException;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -31,8 +31,8 @@ public class ImportSubmitService {
         return importSubmitRepository.save(importSubmit);
     }
 
-    public ImportSubmit getForCurrentUser() {
-        return userService.getCurrentUser().getShop().getImportSubmit();
+    public List<ImportSubmit> getImportSubmitsForCurrentUser() {
+        return userService.getCurrentUser().getShop().getImportSubmits();
     }
 
     public void setImportFileForCurrentUser(String xmlURL) {
@@ -40,7 +40,6 @@ public class ImportSubmitService {
         shop.setImportFileURL(xmlURL);
         shopService.save(shop);
     }
-
 
     public void makeImportForCurrentUserAsync() {
         Shop shop = userService.getCurrentUser().getShop();
@@ -53,8 +52,7 @@ public class ImportSubmitService {
 
         save(importSubmit);
 
-        shop.setImportSubmit(importSubmit);
+        shop.addImportSubmit(importSubmit);
         shopService.save(shop);
     }
-
 }
