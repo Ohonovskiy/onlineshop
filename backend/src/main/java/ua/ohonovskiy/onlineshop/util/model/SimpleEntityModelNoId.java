@@ -19,8 +19,8 @@ public abstract class SimpleEntityModelNoId {
 
     @CreationTimestamp
     @Column(updatable = false)
-    protected LocalDateTime createdOn;
+    protected LocalDateTime createdAt;
 
     @UpdateTimestamp
-    protected LocalDateTime updatedOn;
+    protected LocalDateTime updatedAt;
 }

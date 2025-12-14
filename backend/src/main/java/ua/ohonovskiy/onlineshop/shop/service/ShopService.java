@@ -1,7 +1,7 @@
 package ua.ohonovskiy.onlineshop.shop.service;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 import ua.ohonovskiy.onlineshop.shop.DTO.ShopDTO;
 import ua.ohonovskiy.onlineshop.shop.model.Shop;
 import ua.ohonovskiy.onlineshop.shop.repository.ShopRepository;

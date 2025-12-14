@@ -1,10 +1,10 @@
 package ua.ohonovskiy.onlineshop.product.product.service;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import ua.ohonovskiy.onlineshop.product.category.model.Category;
 import ua.ohonovskiy.onlineshop.product.category.service.CategoryService;
@@ -18,10 +18,7 @@ import ua.ohonovskiy.onlineshop.shop.service.ShopService;
 import ua.ohonovskiy.onlineshop.user.service.UserService;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -35,7 +32,17 @@ public class ProductService {
     private final ProductViewService productViewService;
 
     public Product save(Product product) {
-       return productRepository.save(product);
+        return productRepository.save(product);
+    }
+
+    @Transactional
+    public List<Product> saveAll(List<Product> products) {
+        return productRepository.saveAll(products);
+    }
+
+    @Transactional
+    public void flush() {
+        productRepository.flush();
     }
 
     public Optional<Product> getById(String id) {
@@ -51,30 +58,21 @@ public class ProductService {
     }
 
     public List<Product> getAllForShop(Long shopId) {
-        return shopService.getById(shopId)
-                .orElseThrow()
-                .getProducts();
+        return shopService.getById(shopId).orElseThrow().getProducts();
     }
 
     public List<ProductDTO> getLatest(Integer productsCount) {
-        return productToDTO(productRepository.findAllByOrderByCreatedOnDesc(
+        return productToDTO(productRepository.findAllByOrderByCreatedAtDesc(
                 PageRequest.of(0, productsCount)
         ));
     }
 
-    // TODO
-    //  Add more clever formula
     public List<ProductDTO> getPopular(Integer productsCount) {
-        // popular = views/week
-
-        return productToDTO(                            // casting to DTO
-                getAllById(productViewService           // getting models
-                        .getTopMostViewedFrom(          // getting ids for most popular products
-                                productsCount, LocalDateTime.now().minusDays(7)
-                        )
-                )
+        return productToDTO(
+                getAllById(productViewService.getTopMostViewedFrom(
+                        productsCount, LocalDateTime.now().minusDays(7)
+                ))
         );
-
     }
 
     public List<ProductDTO> getTopDiscounted(Integer productsCount) {
@@ -83,21 +81,12 @@ public class ProductService {
         ));
     }
 
-    /**
-     *  Delete request
-     */
     @Transactional
     public void deleteByIdForCurrentUser(String id) {
 
-        // check if current user owes the product
-        if (userService
-                .getCurrentUser()
-                .getShop()
-                .getProducts()
+        if (userService.getCurrentUser().getShop().getProducts()
                 .stream()
-                .noneMatch(p -> p.getId().equals(id)
-                )
-        ) {
+                .noneMatch(p -> p.getId().equals(id))) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot delete this product");
         }
 
@@ -109,10 +98,6 @@ public class ProductService {
         productRepository.deleteById(id);
     }
 
-
-    /**
-     *  Create request
-     */
     @Transactional
     public void createForCurrentUser(ProductDTO dto) {
         Shop shop = userService.getCurrentUser().getShop();
@@ -122,43 +107,26 @@ public class ProductService {
         Product product = productDTOtoProduct(dto);
         productRepository.save(product);
         product.setProductImages(productImageService.addImage(product.getId(), dto.getImageFiles()));
-
     }
 
-    /**
-     *  Update request
-     */
     public void updateForCurrentUser(String productId, ProductDTO productDTO) {
-        if (userService
-                .getCurrentUser()
-                .getShop()
-                .getProducts()
+        if (userService.getCurrentUser().getShop().getProducts()
                 .stream()
-                .noneMatch(p -> p.getId().equals(productId)
-                )
-        ) {
+                .noneMatch(p -> p.getId().equals(productId))) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot delete this product");
         }
-
         update(productId, productDTO);
     }
 
     public void update(String productId, ProductDTO productDTO) {
         Product product = productDTOtoProduct(productDTO);
         product.setId(productId);
-
         save(product);
     }
 
-
-
     public List<ProductDTO> productToDTO(List<Product> products) {
         List<ProductDTO> dtoList = new ArrayList<>();
-
-        for(Product p : products) {
-            dtoList.add(productToDTO(p));
-        }
-
+        for (Product p : products) dtoList.add(productToDTO(p));
         return dtoList;
     }
 
@@ -168,11 +136,9 @@ public class ProductService {
                 .price(product.getPrice())
                 .description(product.getDescription())
                 .categoryId(product.getCategory().getId())
-                .imgURL(product
-                        .getProductImages()
-                        .get(0)
-                        .getImageUrl()
-                )
+                .imgURL(product.getProductImages().isEmpty()
+                        ? null
+                        : product.getProductImages().get(0).getImageUrl())
                 .build();
     }
 
@@ -190,11 +156,9 @@ public class ProductService {
 
     public List<ProductDTO> getAllDTO() {
         List<ProductDTO> dtoList = new ArrayList<>();
-
-        for(Product p : productRepository.findAll()) {
+        for (Product p : productRepository.findAll()) {
             dtoList.add(productToDTO(p));
         }
-
         return dtoList;
     }
 }

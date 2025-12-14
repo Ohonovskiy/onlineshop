@@ -7,6 +7,8 @@ import ua.ohonovskiy.onlineshop.shop.model.Shop;
 import ua.ohonovskiy.onlineshop.synchronize.enums.ImportStatus;
 import ua.ohonovskiy.onlineshop.util.model.SimpleEntityModel;
 
+import java.time.Instant;
+
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
@@ -15,11 +17,17 @@ import ua.ohonovskiy.onlineshop.util.model.SimpleEntityModel;
 @NoArgsConstructor
 public class ImportSubmit extends SimpleEntityModel {
 
-    @ManyToOne
-    @ToString.Exclude
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ImportStatus importStatus;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     private Shop shop;
 
-    @Enumerated(value = EnumType.STRING)
-    private ImportStatus importStatus = ImportStatus.STATUS_ACCEPTED;
+    @Column(length = 2000)
+    private String errorMessage;
+
+    private Instant startedAt;
+    private Instant finishedAt;
 }

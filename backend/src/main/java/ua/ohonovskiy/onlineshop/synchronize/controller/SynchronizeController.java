@@ -4,10 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ua.ohonovskiy.onlineshop.synchronize.enums.ImportStatus;
 import ua.ohonovskiy.onlineshop.synchronize.model.ImportSubmit;
 import ua.ohonovskiy.onlineshop.synchronize.service.ImportSubmitService;
-import ua.ohonovskiy.onlineshop.synchronize.service.SynchronizeService;
 
 import java.util.List;
 
@@ -16,7 +14,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SynchronizeController {
     private final ImportSubmitService importSubmitService;
-    private final SynchronizeService synchronizeService;
 
     @PostMapping("/import-file")
     public ResponseEntity<Void> postImportFile(@RequestBody String xmlURL) {
@@ -27,13 +24,13 @@ public class SynchronizeController {
 
     @PostMapping("/import")
     public ResponseEntity<Void> makeImport() {
-        importSubmitService.makeImportForCurrentUserAsync();
+        importSubmitService.makeImportForCurrentUser();
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 
     @GetMapping("/import")
     public ResponseEntity<List<ImportSubmit>> getImportInfo() {
-        return ResponseEntity.ok(importSubmitService.getImportSubmitsForCurrentUser());
+        return ResponseEntity.ok(importSubmitService.getAllForCurrentUser());
     }
 }

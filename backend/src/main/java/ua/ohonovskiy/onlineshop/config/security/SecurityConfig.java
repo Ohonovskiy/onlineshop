@@ -1,6 +1,7 @@
 package ua.ohonovskiy.onlineshop.config.security;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -24,6 +25,7 @@ import ua.ohonovskiy.onlineshop.user.service.CustomUserDetailsService;
 @EnableScheduling
 @EnableWebSecurity
 @EnableMethodSecurity
+@EnableBatchProcessing
 @RequiredArgsConstructor
 public class SecurityConfig {
 

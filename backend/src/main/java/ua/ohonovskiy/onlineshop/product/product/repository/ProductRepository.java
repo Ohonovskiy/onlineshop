@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, String> {
 
-    List<Product> findAllByOrderByCreatedOnDesc(Pageable pageable);
+    List<Product> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
     @Query("""
     SELECT p FROM Product p

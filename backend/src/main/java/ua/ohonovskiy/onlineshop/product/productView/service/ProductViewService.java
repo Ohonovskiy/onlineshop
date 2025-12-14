@@ -1,10 +1,10 @@
 package ua.ohonovskiy.onlineshop.product.productView.service;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ua.ohonovskiy.onlineshop.product.product.model.Product;
 import ua.ohonovskiy.onlineshop.product.product.repository.ProductRepository;
 import ua.ohonovskiy.onlineshop.product.productView.model.ProductView;
