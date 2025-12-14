@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ua.ohonovskiy.onlineshop.shop.DTO.ShopDTO;
 import ua.ohonovskiy.onlineshop.shop.model.Shop;
 import ua.ohonovskiy.onlineshop.shop.repository.ShopRepository;
+import ua.ohonovskiy.onlineshop.user.enums.Role;
 import ua.ohonovskiy.onlineshop.user.model.User;
 import ua.ohonovskiy.onlineshop.user.service.UserService;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -37,14 +38,14 @@ public class ShopService {
     }
 
     public void createForCurrentUser(ShopDTO shopDTO) {
-        User currentUser = userService.getByEmail(
-                SecurityContextHolder.getContext().getAuthentication().getName()
-        ).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        User currentUser = userService.getCurrentUser();
 
         Shop newShop = Shop.builder()
                 .name(shopDTO.getName())
                 .description(shopDTO.getDescription())
                 .build();
+
+        currentUser.setRole(Role.ROLE_ADMIN);
 
         shopRepository.save(newShop);
 
