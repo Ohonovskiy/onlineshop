@@ -1,5 +1,6 @@
 package ua.ohonovskiy.onlineshop.product.product.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import ua.ohonovskiy.onlineshop.product.category.model.Category;
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @EqualsAndHashCode(callSuper = true, exclude = {"category"})
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor

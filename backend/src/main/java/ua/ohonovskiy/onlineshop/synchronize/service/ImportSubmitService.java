@@ -1,9 +1,9 @@
 package ua.ohonovskiy.onlineshop.synchronize.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.*;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ua.ohonovskiy.onlineshop.shop.model.Shop;
 import ua.ohonovskiy.onlineshop.shop.service.ShopService;
 import ua.ohonovskiy.onlineshop.synchronize.enums.ImportStatus;
