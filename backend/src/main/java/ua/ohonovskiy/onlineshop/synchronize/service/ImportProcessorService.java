@@ -126,6 +126,7 @@ public class ImportProcessorService {
                             .description(description)
                             .price(price)
                             .category(category)
+                            .shop(shop)
                             .build();
 
                     productBuffer.add(product);

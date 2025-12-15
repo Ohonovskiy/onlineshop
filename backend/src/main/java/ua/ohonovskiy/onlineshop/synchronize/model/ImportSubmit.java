@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import ua.ohonovskiy.onlineshop.shop.model.Shop;
 import ua.ohonovskiy.onlineshop.synchronize.enums.ImportStatus;
-import ua.ohonovskiy.onlineshop.util.model.SimpleEntityModel;
+import ua.ohonovskiy.onlineshop.shared.model.SimpleEntityModel;
 
 import java.time.Instant;
 

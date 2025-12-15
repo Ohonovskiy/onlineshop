@@ -1,11 +1,13 @@
 package ua.ohonovskiy.onlineshop.product.product.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import ua.ohonovskiy.onlineshop.product.category.model.Category;
 import ua.ohonovskiy.onlineshop.product.productImage.model.ProductImage;
-import ua.ohonovskiy.onlineshop.util.model.SimpleEntityModelNoId;
+import ua.ohonovskiy.onlineshop.shared.model.SimpleEntityModelNoId;
+import ua.ohonovskiy.onlineshop.shop.model.Shop;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +37,14 @@ public class Product extends SimpleEntityModelNoId {
     private List<ProductImage> productImages = new ArrayList<>();
 
     @ManyToOne
+    @JoinColumn(name = "category_id")
     private Category category;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "shop_id", nullable = false)
+    @JsonIgnore
+    @ToString.Exclude
+    private Shop shop;
 
     public void setPrice(double price) {
         if (oldPrice != null && price > oldPrice) {

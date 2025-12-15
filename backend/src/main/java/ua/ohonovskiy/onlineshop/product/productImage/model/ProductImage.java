@@ -7,7 +7,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.*;
 import ua.ohonovskiy.onlineshop.product.product.model.Product;
-import ua.ohonovskiy.onlineshop.util.model.SimpleEntityModel;
+import ua.ohonovskiy.onlineshop.shared.model.SimpleEntityModel;
 
 @EqualsAndHashCode(callSuper = true, exclude = {"product"})
 @Entity

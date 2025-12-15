@@ -11,8 +11,8 @@ import ua.ohonovskiy.onlineshop.synchronize.model.ImportSubmit;
 import ua.ohonovskiy.onlineshop.synchronize.repository.ImportSubmitRepository;
 import ua.ohonovskiy.onlineshop.user.model.User;
 import ua.ohonovskiy.onlineshop.user.service.UserService;
-import ua.ohonovskiy.onlineshop.util.exception.ImportNotExistsException;
-import ua.ohonovskiy.onlineshop.util.exception.ShopNotExistsException;
+import ua.ohonovskiy.onlineshop.shared.exception.ImportNotExistsException;
+import ua.ohonovskiy.onlineshop.shared.exception.ShopNotExistsException;
 
 import java.time.Instant;
 import java.util.List;

@@ -2,10 +2,14 @@ package ua.ohonovskiy.onlineshop.user.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import ua.ohonovskiy.onlineshop.cart.model.cart.Cart;
+import ua.ohonovskiy.onlineshop.cart.cart.model.Cart;
+import ua.ohonovskiy.onlineshop.order.order.model.Order;
 import ua.ohonovskiy.onlineshop.shop.model.Shop;
 import ua.ohonovskiy.onlineshop.user.enums.Role;
-import ua.ohonovskiy.onlineshop.util.model.SimpleEntityModel;
+import ua.ohonovskiy.onlineshop.shared.model.SimpleEntityModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @EqualsAndHashCode(callSuper = true, exclude = {"shop"})
 @Entity
@@ -30,6 +34,9 @@ public class User extends SimpleEntityModel {
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Cart cart;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Order> orders = new ArrayList<>();
 
     @Enumerated(value = EnumType.STRING)
     private Role role = Role.ROLE_USER;

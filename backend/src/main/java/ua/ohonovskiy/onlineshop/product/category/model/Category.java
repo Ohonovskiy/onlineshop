@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import ua.ohonovskiy.onlineshop.util.model.SimpleEntityModel;
+import ua.ohonovskiy.onlineshop.shared.model.SimpleEntityModel;
 
 @EqualsAndHashCode(callSuper = true, exclude = {"parent"})
 @Entity

@@ -5,7 +5,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import lombok.*;
 import ua.ohonovskiy.onlineshop.product.product.model.Product;
-import ua.ohonovskiy.onlineshop.util.model.SimpleEntityModel;
+import ua.ohonovskiy.onlineshop.shared.model.SimpleEntityModel;
 
 import java.time.LocalDateTime;
 
