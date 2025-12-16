@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ua.ohonovskiy.onlineshop.shop.model.Shop;
 import ua.ohonovskiy.onlineshop.shop.service.ShopService;
-import ua.ohonovskiy.onlineshop.synchronize.DTO.SetImportFileRequest;
+import ua.ohonovskiy.onlineshop.synchronize.DTO.ImportFileDTO;
 import ua.ohonovskiy.onlineshop.synchronize.enums.ImportStatus;
 import ua.ohonovskiy.onlineshop.synchronize.model.ImportSubmit;
 import ua.ohonovskiy.onlineshop.synchronize.repository.ImportSubmitRepository;
@@ -104,7 +104,7 @@ public class ImportSubmitService {
         shopService.save(shop);
     }
 
-    public void setImportFileForCurrentUser(SetImportFileRequest request) {
+    public void setImportFileForCurrentUser(ImportFileDTO request) {
         User user = userService.getCurrentUser();
 
         if(user.getShop() == null)

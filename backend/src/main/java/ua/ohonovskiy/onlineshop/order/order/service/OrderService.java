@@ -7,7 +7,7 @@ import ua.ohonovskiy.onlineshop.order.order.DTO.OrderDTO;
 import ua.ohonovskiy.onlineshop.order.order.enums.OrderStatus;
 import ua.ohonovskiy.onlineshop.order.order.model.Order;
 import ua.ohonovskiy.onlineshop.order.order.repository.OrderRepository;
-import ua.ohonovskiy.onlineshop.order.orderItem.DTO.ItemDTO;
+import ua.ohonovskiy.onlineshop.shared.DTO.ProductIdQtyDTO;
 import ua.ohonovskiy.onlineshop.order.orderItem.model.OrderItem;
 import ua.ohonovskiy.onlineshop.order.orderItem.service.OrderItemService;
 import ua.ohonovskiy.onlineshop.product.product.model.Product;
@@ -49,7 +49,7 @@ public class OrderService {
         }
 
         List<String> ids = request.itemsDTO().stream()
-                .map(ItemDTO::productId)
+                .map(ProductIdQtyDTO::productId)
                 .distinct()
                 .toList();
 
@@ -79,7 +79,7 @@ public class OrderService {
 
         BigDecimal total = BigDecimal.ZERO;
 
-        for (ItemDTO reqItem : request.itemsDTO()) {
+        for (ProductIdQtyDTO reqItem : request.itemsDTO()) {
             if (reqItem.quantity() <= 0) {
                 throw new IllegalArgumentException("Quantity must be > 0");
             }
