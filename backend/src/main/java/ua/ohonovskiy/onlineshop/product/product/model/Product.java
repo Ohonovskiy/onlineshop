@@ -1,6 +1,5 @@
 package ua.ohonovskiy.onlineshop.product.product.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,17 +8,16 @@ import ua.ohonovskiy.onlineshop.product.productImage.model.ProductImage;
 import ua.ohonovskiy.onlineshop.shared.model.SimpleEntityModelNoId;
 import ua.ohonovskiy.onlineshop.shop.model.Shop;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-@EqualsAndHashCode(callSuper = true, exclude = {"category"})
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
-@ToString
-@Builder
-@Data
+@EqualsAndHashCode(callSuper = true, exclude = {"category"})
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "shop"})
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor @Builder
+@ToString(exclude = {"shop"})
 public class Product extends SimpleEntityModelNoId {
 
     @Id
@@ -29,8 +27,8 @@ public class Product extends SimpleEntityModelNoId {
 
     @Column(columnDefinition = "TEXT")
     private String description;
-    private double price;
-    private Double oldPrice;
+    private BigDecimal price;
+    private BigDecimal oldPrice;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
@@ -42,19 +40,27 @@ public class Product extends SimpleEntityModelNoId {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "shop_id", nullable = false)
-    @JsonIgnore
-    @ToString.Exclude
     private Shop shop;
 
-    public void setPrice(double price) {
-        if (oldPrice != null && price > oldPrice) {
-            oldPrice = null;
-            this.price = price;
+    public void setPrice(BigDecimal newPrice) {
+        if (newPrice == null) {
+            throw new IllegalArgumentException("Price cannot be null");
+        }
+
+        if (this.price == null) {
+            this.price = newPrice;
+            this.oldPrice = null;
             return;
         }
 
-        this.oldPrice = this.price;
-        this.price = price;
+        if (newPrice.compareTo(this.price) < 0) {
+            this.oldPrice = this.price;
+            this.price = newPrice;
+            return;
+        }
+
+        this.price = newPrice;
+        this.oldPrice = null;
     }
 
 

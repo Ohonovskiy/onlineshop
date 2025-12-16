@@ -9,12 +9,11 @@ import lombok.*;
 import ua.ohonovskiy.onlineshop.product.product.model.Product;
 import ua.ohonovskiy.onlineshop.shared.model.SimpleEntityModel;
 
-@EqualsAndHashCode(callSuper = true, exclude = {"product"})
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-@Data
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor @Builder
+@EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
+@ToString(exclude = {"product"})
 public class ProductImage extends SimpleEntityModel {
 
     private String imageUrl;

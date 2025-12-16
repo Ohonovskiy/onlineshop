@@ -9,12 +9,11 @@ import ua.ohonovskiy.onlineshop.shared.model.SimpleEntityModel;
 
 import java.time.LocalDateTime;
 
-@EqualsAndHashCode(callSuper = true)
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-@Data
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor @Builder
+@EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
+@ToString(exclude = {"product"})
 public class ProductView extends SimpleEntityModel {
 
     @ManyToOne(fetch = FetchType.LAZY)

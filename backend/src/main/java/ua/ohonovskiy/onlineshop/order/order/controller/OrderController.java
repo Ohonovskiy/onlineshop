@@ -32,7 +32,7 @@ public class OrderController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<HttpStatus> deleteById(@PathVariable Long id) {
+    public ResponseEntity<HttpStatus> cancelOrder(@PathVariable Long id) {
         orderService.cancelOrder(id);
         return ResponseEntity.ok(HttpStatus.ACCEPTED);
     }

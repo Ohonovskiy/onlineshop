@@ -11,11 +11,14 @@ import ua.ohonovskiy.onlineshop.order.orderItem.model.OrderItem;
 import ua.ohonovskiy.onlineshop.product.product.model.Product;
 import ua.ohonovskiy.onlineshop.product.product.service.ProductService;
 import ua.ohonovskiy.onlineshop.shared.exception.OrderNotExistsException;
+import ua.ohonovskiy.onlineshop.user.enums.Role;
 import ua.ohonovskiy.onlineshop.user.model.User;
 import ua.ohonovskiy.onlineshop.user.service.UserService;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -75,7 +78,7 @@ public class OrderService {
                 .status(OrderStatus.NEW)
                 .build();
 
-        double total = 0;
+        BigDecimal total = BigDecimal.ZERO;
 
         for (PlaceOrderRequest.Item reqItem : request.items()) {
             if (reqItem.quantity() <= 0) {
@@ -93,7 +96,9 @@ public class OrderService {
 
             order.addItem(item);
 
-            total += p.getPrice() * reqItem.quantity();
+            total = total.add(
+                    p.getPrice().multiply(BigDecimal.valueOf(reqItem.quantity()))
+            );
         }
 
         order.setTotalPrice(total);
@@ -111,13 +116,54 @@ public class OrderService {
                         new OrderNotExistsException("Order with id: " + orderId + " was not found")
                 );
 
-        if (!order.canBeCanceled()) {
-            throw new IllegalStateException(
-                    "You cannot cancel order with " + order.getStatus() + " status."
-            );
+        validateStatusChange(order.getStatus(), OrderStatus.CUSTOMER_CANCELED, Role.ROLE_USER);
+
+        order.setStatus(OrderStatus.CUSTOMER_CANCELED);
+    }
+
+    public static void validateStatusChange (
+            OrderStatus oldStatus,
+            OrderStatus newStatus,
+            Role actor
+    ) {
+        if (oldStatus == newStatus) {
+            throw new IllegalStateException("Order already has status " + oldStatus);
         }
 
-        order.setStatus(OrderStatus.CANCELED);
+        if (oldStatus.isFinal()) {
+            throw new IllegalStateException("Order is already finished");
+        }
+
+        Set<OrderStatus> allowed =
+                ALLOWED_TRANSITIONS
+                        .getOrDefault(actor, Map.of())
+                        .getOrDefault(oldStatus, Set.of());
+
+        if (!allowed.contains(newStatus)) {
+            throw new IllegalStateException(
+                    "Cannot change order status from " + oldStatus +
+                            " to " + newStatus + " by " + actor
+            );
+        }
     }
+
+    private static final Map<Role, Map<OrderStatus, Set<OrderStatus>>> ALLOWED_TRANSITIONS =
+            Map.of(
+                    Role.ROLE_SHOP_OWNER, Map.of(
+                            OrderStatus.NEW, Set.of(OrderStatus.ACCEPTED, OrderStatus.OWNER_CANCELED),
+                            OrderStatus.ACCEPTED, Set.of(OrderStatus.OWNER_CANCELED, OrderStatus.PAID),
+                            OrderStatus.PAID, Set.of(OrderStatus.OWNER_CANCELED)
+                    ),
+                    Role.ROLE_USER, Map.of(
+                            OrderStatus.NEW, Set.of(OrderStatus.CUSTOMER_CANCELED),
+                            OrderStatus.ACCEPTED, Set.of(OrderStatus.CUSTOMER_CANCELED),
+                            OrderStatus.PAID, Set.of(OrderStatus.CUSTOMER_CANCELED)
+                    ),
+                    Role.ROLE_SYSTEM, Map.of(
+                            OrderStatus.PAID, Set.of(OrderStatus.SHIPPED),
+                            OrderStatus.SHIPPED, Set.of(OrderStatus.DELIVERED)
+                    )
+
+            );
 
 }

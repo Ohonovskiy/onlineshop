@@ -19,6 +19,7 @@ import ua.ohonovskiy.onlineshop.shop.model.Shop;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.net.URL;
 import java.util.*;
 
@@ -116,7 +117,7 @@ public class ImportProcessorService {
 
                     if (priceStr.isBlank() || catStr.isBlank() || article.isBlank()) continue;
 
-                    double price = Double.parseDouble(priceStr);
+                    BigDecimal price = BigDecimal.valueOf(Long.parseLong(priceStr));
                     Long catId = Long.parseLong(catStr);
                     Category category = categoryMap.get(catId);
 

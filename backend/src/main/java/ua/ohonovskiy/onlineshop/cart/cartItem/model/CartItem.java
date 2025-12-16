@@ -1,6 +1,6 @@
 package ua.ohonovskiy.onlineshop.cart.cartItem.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import ua.ohonovskiy.onlineshop.cart.cart.model.Cart;
@@ -14,17 +14,15 @@ import ua.ohonovskiy.onlineshop.shared.model.SimpleEntityModel;
                 @UniqueConstraint(columnNames = {"cart_id", "product_id"})
         }
 )
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor @Builder
+@EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
+@ToString(exclude = {"cart"})
+@JsonIgnoreProperties({"cart"})
 public class CartItem extends SimpleEntityModel {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_id", nullable = false)
-    @JsonIgnore
-    @ToString.Exclude
     private Cart cart;
 
     @ManyToOne(fetch = FetchType.LAZY)

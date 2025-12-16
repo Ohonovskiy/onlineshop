@@ -39,15 +39,16 @@ public class AuthService {
             throw new RuntimeException("User already exists");
         }
 
-        User user = new User();
-        user.setName(request.getName());
-        user.setSurname(request.getSurname());
-        user.setEmail(request.getEmail());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setEnabled(true);
-        user.setRole(Role.ROLE_USER);
-
-        userService.save(user);
+        userService.save(
+                User.builder()
+                        .name(request.getName())
+                        .surname(request.getSurname())
+                        .email(request.getEmail())
+                        .password(passwordEncoder.encode(request.getPassword()))
+                        .enabled(true)
+                        .role(Role.ROLE_USER)
+                .build()
+        );
     }
 }
 

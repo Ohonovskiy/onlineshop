@@ -11,11 +11,10 @@ import ua.ohonovskiy.onlineshop.shared.model.SimpleEntityModel;
 import java.util.ArrayList;
 import java.util.List;
 
-@EqualsAndHashCode(callSuper = true, exclude = {"shop"})
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
-@Data
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor @Builder
+@EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 public class User extends SimpleEntityModel {
 
     private String name;
@@ -29,15 +28,17 @@ public class User extends SimpleEntityModel {
     private boolean enabled;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @ToString.Exclude
+    @JoinColumn(name = "shop_id")
     private Shop shop;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Cart cart;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<Order> orders = new ArrayList<>();
 
     @Enumerated(value = EnumType.STRING)
+    @Builder.Default
     private Role role = Role.ROLE_USER;
 }

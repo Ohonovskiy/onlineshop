@@ -1,6 +1,7 @@
 package ua.ohonovskiy.onlineshop.shop.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ua.ohonovskiy.onlineshop.shop.DTO.ShopDTO;
 import ua.ohonovskiy.onlineshop.shop.model.Shop;
@@ -8,9 +9,6 @@ import ua.ohonovskiy.onlineshop.shop.repository.ShopRepository;
 import ua.ohonovskiy.onlineshop.user.enums.Role;
 import ua.ohonovskiy.onlineshop.user.model.User;
 import ua.ohonovskiy.onlineshop.user.service.UserService;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
@@ -37,6 +35,9 @@ public class ShopService {
         return Optional.of(shopRepository.getReferenceById(id));
     }
 
+    public Shop getForCurrentUser() {
+        return userService.getCurrentUser().getShop();
+    }
     public void createForCurrentUser(ShopDTO shopDTO) {
         User currentUser = userService.getCurrentUser();
 
@@ -45,7 +46,7 @@ public class ShopService {
                 .description(shopDTO.getDescription())
                 .build();
 
-        currentUser.setRole(Role.ROLE_ADMIN);
+        currentUser.setRole(Role.ROLE_SHOP_OWNER);
 
         shopRepository.save(newShop);
 

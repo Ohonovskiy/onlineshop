@@ -1,23 +1,24 @@
 package ua.ohonovskiy.onlineshop.shop.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.Cascade;
 import ua.ohonovskiy.onlineshop.order.order.model.Order;
 import ua.ohonovskiy.onlineshop.product.product.model.Product;
-import ua.ohonovskiy.onlineshop.synchronize.model.ImportSubmit;
 import ua.ohonovskiy.onlineshop.shared.exception.ImportNotExistsException;
 import ua.ohonovskiy.onlineshop.shared.model.SimpleEntityModel;
+import ua.ohonovskiy.onlineshop.synchronize.model.ImportSubmit;
+import ua.ohonovskiy.onlineshop.user.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@EqualsAndHashCode(callSuper = true, exclude = {"products"})
 @Entity
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Data
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor @Builder
+@EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
+@ToString(exclude = {"owner"})
+@JsonIgnoreProperties({"owner"})
 public class Shop extends SimpleEntityModel {
     private String name;
 
@@ -26,14 +27,17 @@ public class Shop extends SimpleEntityModel {
     private String importFileURL;
 
     @OneToMany
-    @JoinColumn(name = "import_id")
     private List<ImportSubmit> importSubmits;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Order> orders;
 
     @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<Product> products = new ArrayList<>();
+
+    @OneToOne(mappedBy = "shop", cascade = CascadeType.ALL, orphanRemoval = true)
+    private User owner;
 
     public void addProduct(Product product) {
         products.add(product);

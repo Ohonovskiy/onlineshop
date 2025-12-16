@@ -1,27 +1,26 @@
 package ua.ohonovskiy.onlineshop.cart.cart.model;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import ua.ohonovskiy.onlineshop.cart.cartItem.model.CartItem;
-import ua.ohonovskiy.onlineshop.user.model.User;
 import ua.ohonovskiy.onlineshop.shared.model.SimpleEntityModel;
+import ua.ohonovskiy.onlineshop.user.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@EqualsAndHashCode(callSuper = true)
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
-@Data
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor @Builder
+@EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
+@ToString(exclude = {"user"})
+@JsonIgnoreProperties({"user"})
 public class Cart extends SimpleEntityModel {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
-    @JsonIgnore
-    @ToString.Exclude
     private User user;
 
     @OneToMany(
@@ -29,5 +28,6 @@ public class Cart extends SimpleEntityModel {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
+    @Builder.Default
     private List<CartItem> items = new ArrayList<>();
 }
