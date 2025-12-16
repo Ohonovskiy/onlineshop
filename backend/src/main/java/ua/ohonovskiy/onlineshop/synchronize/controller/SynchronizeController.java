@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ua.ohonovskiy.onlineshop.synchronize.DTO.SetImportFileRequest;
 import ua.ohonovskiy.onlineshop.synchronize.model.ImportSubmit;
 import ua.ohonovskiy.onlineshop.synchronize.service.ImportSubmitService;
 
@@ -16,8 +17,8 @@ public class SynchronizeController {
     private final ImportSubmitService importSubmitService;
 
     @PostMapping("/import-file")
-    public ResponseEntity<Void> postImportFile(@RequestBody String xmlURL) {
-        importSubmitService.setImportFileForCurrentUser(xmlURL);
+    public ResponseEntity<Void> postImportFile(@RequestBody SetImportFileRequest request) {
+        importSubmitService.setImportFileForCurrentUser(request);
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
