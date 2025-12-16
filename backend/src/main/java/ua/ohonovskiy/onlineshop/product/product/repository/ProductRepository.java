@@ -19,5 +19,4 @@ public interface ProductRepository extends JpaRepository<Product, String> {
     ORDER BY (p.oldPrice - p.price) / p.oldPrice DESC
     """)
     List<Product> findTopDiscounted(Pageable pageable);
-
 }

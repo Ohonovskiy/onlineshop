@@ -3,11 +3,13 @@ package ua.ohonovskiy.onlineshop.order.order.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ua.ohonovskiy.onlineshop.order.order.DTO.PlaceOrderRequest;
+import ua.ohonovskiy.onlineshop.order.order.DTO.OrderDTO;
 import ua.ohonovskiy.onlineshop.order.order.enums.OrderStatus;
 import ua.ohonovskiy.onlineshop.order.order.model.Order;
 import ua.ohonovskiy.onlineshop.order.order.repository.OrderRepository;
+import ua.ohonovskiy.onlineshop.order.orderItem.DTO.ItemDTO;
 import ua.ohonovskiy.onlineshop.order.orderItem.model.OrderItem;
+import ua.ohonovskiy.onlineshop.order.orderItem.service.OrderItemService;
 import ua.ohonovskiy.onlineshop.product.product.model.Product;
 import ua.ohonovskiy.onlineshop.product.product.service.ProductService;
 import ua.ohonovskiy.onlineshop.shared.exception.OrderNotExistsException;
@@ -26,6 +28,7 @@ public class OrderService {
     private final OrderRepository repository;
     private final UserService userService;
     private final ProductService productService;
+    private final OrderItemService orderItemService;
 
     public List<Order> getAllForCurrentUser() {
         return userService.getCurrentUser().getOrders();
@@ -40,13 +43,13 @@ public class OrderService {
     }
 
     @Transactional
-    public Order placeOrderForCurrentUser(PlaceOrderRequest request) {
-        if (request.items() == null || request.items().isEmpty()) {
-            throw new IllegalArgumentException("Order items are empty");
+    public Order placeOrderForCurrentUser(OrderDTO request) {
+        if (request.itemsDTO() == null || request.itemsDTO().isEmpty()) {
+            throw new IllegalArgumentException("Order itemsDTO are empty");
         }
 
-        List<String> ids = request.items().stream()
-                .map(PlaceOrderRequest.Item::productId)
+        List<String> ids = request.itemsDTO().stream()
+                .map(ItemDTO::productId)
                 .distinct()
                 .toList();
 
@@ -65,22 +68,18 @@ public class OrderService {
         Map<String, Product> byId = products.stream()
                 .collect(java.util.stream.Collectors.toMap(Product::getId, p -> p));
 
-        // 4) Створюємо order + items на бекенді
         User user = userService.getCurrentUser();
 
         Order order = Order.builder()
                 .user(user)
                 .shop(products.get(0).getShop())
-                .comment(request.comment())
-                .customerName(request.customerName())
-                .customerPhone(request.customerPhone())
-                .deliveryAddress(request.deliveryAddress())
+                .userOrderInfo(request.userInfo())
                 .status(OrderStatus.NEW)
                 .build();
 
         BigDecimal total = BigDecimal.ZERO;
 
-        for (PlaceOrderRequest.Item reqItem : request.items()) {
+        for (ItemDTO reqItem : request.itemsDTO()) {
             if (reqItem.quantity() <= 0) {
                 throw new IllegalArgumentException("Quantity must be > 0");
             }
@@ -105,6 +104,21 @@ public class OrderService {
 
         return repository.save(order);
     }
+
+    public OrderDTO toDTO(Order order) {
+        return OrderDTO.builder()
+                .itemsDTO(orderItemService.toItemDTO(order.getItems()))
+                .userInfo(order.getStatus().equals(OrderStatus.NEW) ? null : order.getUserOrderInfo())
+                .build();
+    }
+
+    public List<OrderDTO> toDTO(List<Order> orders) {
+        return orders.stream()
+                .map(this::toDTO)
+                .toList();
+    }
+
+
 
 
     @Transactional

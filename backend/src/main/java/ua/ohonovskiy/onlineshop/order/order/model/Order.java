@@ -41,13 +41,8 @@ public class Order extends SimpleEntityModel {
     @Column(nullable = false)
     private BigDecimal totalPrice;
 
-    private String customerName;
-    private String customerPhone;
-
-    // TODO after delivery service
-    private String deliveryAddress;
-
-    private String comment;
+    @ManyToOne
+    private UserOrderInfo userOrderInfo;
 
     public void addItem(OrderItem item) {
         if (items == null) items = new ArrayList<>();

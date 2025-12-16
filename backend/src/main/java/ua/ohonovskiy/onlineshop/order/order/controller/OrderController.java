@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ua.ohonovskiy.onlineshop.order.order.DTO.PlaceOrderRequest;
+import ua.ohonovskiy.onlineshop.order.order.DTO.OrderDTO;
 import ua.ohonovskiy.onlineshop.order.order.model.Order;
 import ua.ohonovskiy.onlineshop.order.order.service.OrderService;
 
@@ -17,7 +17,7 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping
-    public ResponseEntity<Order> placeOrder(@RequestBody PlaceOrderRequest request) {
+    public ResponseEntity<Order> placeOrder(@RequestBody OrderDTO request) {
         return ResponseEntity.ok(orderService.placeOrderForCurrentUser(request));
     }
 

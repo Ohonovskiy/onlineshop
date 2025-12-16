@@ -4,7 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import ua.ohonovskiy.onlineshop.order.order.enums.OrderStatus;
+import ua.ohonovskiy.onlineshop.order.order.DTO.OrderDTO;
+import ua.ohonovskiy.onlineshop.order.order.DTO.OrderStatusRequest;
 import ua.ohonovskiy.onlineshop.order.order.model.Order;
 import ua.ohonovskiy.onlineshop.order.order.service.OwnerOrderService;
 
@@ -19,8 +20,8 @@ public class OwnerOrderController {
     private final OwnerOrderService ownerOrderService;
 
     @GetMapping
-    public ResponseEntity<List<Order>> getAll() {
-        return ResponseEntity.ok(ownerOrderService.getAllForCurrentOwner());
+    public ResponseEntity<List<OrderDTO>> getAll() {
+        return ResponseEntity.ok(ownerOrderService.getAllDTOForCurrentOwner());
     }
 
     @GetMapping("/{id}")
@@ -30,7 +31,7 @@ public class OwnerOrderController {
 
     @PostMapping("/{id}")
     public ResponseEntity<Order> changeStatus(@PathVariable Long id,
-                                              @RequestBody OrderStatus status) {
-        return ResponseEntity.ok(ownerOrderService.changeStatus(id, status));
+                                              @RequestBody OrderStatusRequest orderStatusRequest) {
+        return ResponseEntity.ok(ownerOrderService.changeStatus(id, orderStatusRequest));
     }
 }

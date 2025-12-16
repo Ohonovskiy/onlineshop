@@ -3,6 +3,8 @@ package ua.ohonovskiy.onlineshop.order.order.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ua.ohonovskiy.onlineshop.order.order.DTO.OrderDTO;
+import ua.ohonovskiy.onlineshop.order.order.DTO.OrderStatusRequest;
 import ua.ohonovskiy.onlineshop.order.order.enums.OrderStatus;
 import ua.ohonovskiy.onlineshop.order.order.model.Order;
 import ua.ohonovskiy.onlineshop.order.order.repository.OrderRepository;
@@ -19,9 +21,14 @@ public class OwnerOrderService {
     private final OrderRepository orderRepository;
     private final UserService userService;
     private final ShopService shopService;
+    private final OrderService orderService;
 
     public List<Order> getAllForCurrentOwner() {
         return orderRepository.findAllByShop_Owner(userService.getCurrentUser());
+    }
+
+    public List<OrderDTO> getAllDTOForCurrentOwner() {
+        return orderService.toDTO(orderRepository.findAllByShop_Owner(userService.getCurrentUser()));
     }
 
     public Order getByIdForCurrentOwner(Long id) {
@@ -30,9 +37,11 @@ public class OwnerOrderService {
     }
 
     @Transactional
-    public Order changeStatus(Long orderId, OrderStatus newStatus) {
+    public Order changeStatus(Long orderId, OrderStatusRequest request) {
         Order order = orderRepository.findByIdAndShop(orderId, shopService.getForCurrentUser())
                 .orElseThrow(() -> new OrderNotExistsException("Order was not found"));
+
+        OrderStatus newStatus = request.orderStatus();
 
         OrderService.validateStatusChange(order.getStatus(), newStatus, Role.ROLE_SHOP_OWNER);
 
