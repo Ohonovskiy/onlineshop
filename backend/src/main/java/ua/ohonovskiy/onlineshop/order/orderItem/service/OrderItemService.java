@@ -1,25 +1,29 @@
 package ua.ohonovskiy.onlineshop.order.orderItem.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ua.ohonovskiy.onlineshop.shared.DTO.ProductIdQtyDTO;
+import ua.ohonovskiy.onlineshop.product.product.service.ProductService;
+import ua.ohonovskiy.onlineshop.shared.DTO.ProductQtyDTO;
 import ua.ohonovskiy.onlineshop.order.orderItem.model.OrderItem;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class OrderItemService {
+    private final ProductService productService;
 
-    public ProductIdQtyDTO toItemDTO(OrderItem item) {
-        return new ProductIdQtyDTO(
+    public ProductQtyDTO toItemDTO(OrderItem item) {
+        return new ProductQtyDTO(
                 item.getProduct() != null
-                        ? item.getProduct().getId()
+                        ? productService.toDTO(item.getProduct())
                         : null,
                 item.getQuantity()
         );
     }
 
-    public List<ProductIdQtyDTO> toItemDTO(List<OrderItem> items) {
+    public List<ProductQtyDTO> toItemDTO(List<OrderItem> items) {
         return items.stream().map(this::toItemDTO).collect(Collectors.toList());
     }
 }

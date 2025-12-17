@@ -62,13 +62,13 @@ public class ProductService {
     }
 
     public List<ProductDTO> getLatest(Integer productsCount) {
-        return productToDTO(productRepository.findAllByOrderByCreatedAtDesc(
+        return toDTO(productRepository.findAllByOrderByCreatedAtDesc(
                 PageRequest.of(0, productsCount)
         ));
     }
 
     public List<ProductDTO> getPopular(Integer productsCount) {
-        return productToDTO(
+        return toDTO(
                 getAllById(productViewService.getTopMostViewedFrom(
                         productsCount, LocalDateTime.now().minusDays(7)
                 ))
@@ -76,7 +76,7 @@ public class ProductService {
     }
 
     public List<ProductDTO> getTopDiscounted(Integer productsCount) {
-        return productToDTO(productRepository.findTopDiscounted(
+        return toDTO(productRepository.findTopDiscounted(
                 PageRequest.of(0, productsCount)
         ));
     }
@@ -124,14 +124,15 @@ public class ProductService {
         save(product);
     }
 
-    public List<ProductDTO> productToDTO(List<Product> products) {
+    public List<ProductDTO> toDTO(List<Product> products) {
         List<ProductDTO> dtoList = new ArrayList<>();
-        for (Product p : products) dtoList.add(productToDTO(p));
+        for (Product p : products) dtoList.add(toDTO(p));
         return dtoList;
     }
 
-    public ProductDTO productToDTO(Product product) {
+    public ProductDTO toDTO(Product product) {
         return ProductDTO.builder()
+                .productId(product.getId())
                 .name(product.getName())
                 .price(product.getPrice())
                 .description(product.getDescription())
@@ -157,7 +158,7 @@ public class ProductService {
     public List<ProductDTO> getAllDTO() {
         List<ProductDTO> dtoList = new ArrayList<>();
         for (Product p : productRepository.findAll()) {
-            dtoList.add(productToDTO(p));
+            dtoList.add(toDTO(p));
         }
         return dtoList;
     }

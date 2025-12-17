@@ -31,13 +31,13 @@ public class OwnerOrderService {
         return orderService.toDTO(orderRepository.findAllByShop_Owner(userService.getCurrentUser()));
     }
 
-    public Order getByIdForCurrentOwner(Long id) {
-        return orderRepository.findByIdAndShop_Owner(id, userService.getCurrentUser())
-                .orElseThrow(() -> new OrderNotExistsException("Order with id: "+id+" was not found"));
+    public OrderDTO getByIdForCurrentOwner(Long id) {
+        return orderService.toDTO(orderRepository.findByIdAndShop_Owner(id, userService.getCurrentUser())
+                .orElseThrow(() -> new OrderNotExistsException("Order with id: "+id+" was not found")));
     }
 
     @Transactional
-    public Order changeStatus(Long orderId, OrderStatusRequest request) {
+    public OrderDTO changeStatus(Long orderId, OrderStatusRequest request) {
         Order order = orderRepository.findByIdAndShop(orderId, shopService.getForCurrentUser())
                 .orElseThrow(() -> new OrderNotExistsException("Order was not found"));
 
@@ -47,6 +47,6 @@ public class OwnerOrderService {
 
         order.setStatus(newStatus);
 
-        return orderRepository.save(order);
+        return orderService.toDTO(orderRepository.save(order));
     }
 }

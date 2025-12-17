@@ -4,10 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ua.ohonovskiy.onlineshop.order.order.DTO.OrderDTO;
+import ua.ohonovskiy.onlineshop.order.order.DTO.PlaceOrderRequest;
 import ua.ohonovskiy.onlineshop.order.order.enums.OrderStatus;
 import ua.ohonovskiy.onlineshop.order.order.model.Order;
+import ua.ohonovskiy.onlineshop.order.order.model.UserOrderInfo;
 import ua.ohonovskiy.onlineshop.order.order.repository.OrderRepository;
-import ua.ohonovskiy.onlineshop.shared.DTO.ProductIdQtyDTO;
+import ua.ohonovskiy.onlineshop.order.orderItem.DTO.ItemQty;
 import ua.ohonovskiy.onlineshop.order.orderItem.model.OrderItem;
 import ua.ohonovskiy.onlineshop.order.orderItem.service.OrderItemService;
 import ua.ohonovskiy.onlineshop.product.product.model.Product;
@@ -29,6 +31,7 @@ public class OrderService {
     private final UserService userService;
     private final ProductService productService;
     private final OrderItemService orderItemService;
+    private final UserOrderInfoService userOrderInfoService;
 
     public List<Order> getAllForCurrentUser() {
         return userService.getCurrentUser().getOrders();
@@ -43,13 +46,13 @@ public class OrderService {
     }
 
     @Transactional
-    public Order placeOrderForCurrentUser(OrderDTO request) {
-        if (request.itemsDTO() == null || request.itemsDTO().isEmpty()) {
+    public Order placeOrderForCurrentUser(PlaceOrderRequest request) {
+        if (request.items() == null || request.items().isEmpty()) {
             throw new IllegalArgumentException("Order itemsDTO are empty");
         }
 
-        List<String> ids = request.itemsDTO().stream()
-                .map(ProductIdQtyDTO::productId)
+        List<String> ids = request.items().stream()
+                .map(ItemQty::productId)
                 .distinct()
                 .toList();
 
@@ -70,33 +73,35 @@ public class OrderService {
 
         User user = userService.getCurrentUser();
 
+        UserOrderInfo info = userOrderInfoService.save(request.userOrderInfo());
+
         Order order = Order.builder()
                 .user(user)
                 .shop(products.get(0).getShop())
-                .userOrderInfo(request.userInfo())
+                .userOrderInfo(info)
                 .status(OrderStatus.NEW)
                 .build();
 
         BigDecimal total = BigDecimal.ZERO;
 
-        for (ProductIdQtyDTO reqItem : request.itemsDTO()) {
-            if (reqItem.quantity() <= 0) {
+        for (ItemQty itemQty : request.items()) {
+            if (itemQty.qty() <= 0) {
                 throw new IllegalArgumentException("Quantity must be > 0");
             }
 
-            Product p = byId.get(reqItem.productId());
+            Product p = byId.get(itemQty.productId());
 
             OrderItem item = OrderItem.builder()
                     .product(p)
                     .productName(p.getName())          // snapshot
                     .priceAtPurchase(p.getPrice())     // snapshot
-                    .quantity(reqItem.quantity())
+                    .quantity(itemQty.qty())
                     .build();
 
             order.addItem(item);
 
             total = total.add(
-                    p.getPrice().multiply(BigDecimal.valueOf(reqItem.quantity()))
+                    p.getPrice().multiply(BigDecimal.valueOf(itemQty.qty()))
             );
         }
 
@@ -107,6 +112,7 @@ public class OrderService {
 
     public OrderDTO toDTO(Order order) {
         return OrderDTO.builder()
+                .orderStatus(order.getStatus())
                 .itemsDTO(orderItemService.toItemDTO(order.getItems()))
                 .userInfo(order.getStatus().equals(OrderStatus.NEW) ? null : order.getUserOrderInfo())
                 .build();

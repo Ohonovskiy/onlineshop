@@ -6,7 +6,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ua.ohonovskiy.onlineshop.order.order.DTO.OrderDTO;
 import ua.ohonovskiy.onlineshop.order.order.DTO.OrderStatusRequest;
-import ua.ohonovskiy.onlineshop.order.order.model.Order;
 import ua.ohonovskiy.onlineshop.order.order.service.OwnerOrderService;
 
 import java.util.List;
@@ -25,12 +24,12 @@ public class OwnerOrderController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Order> getById(@PathVariable Long id) {
+    public ResponseEntity<OrderDTO> getById(@PathVariable Long id) {
         return ResponseEntity.ok(ownerOrderService.getByIdForCurrentOwner(id));
     }
 
     @PostMapping("/{id}")
-    public ResponseEntity<Order> changeStatus(@PathVariable Long id,
+    public ResponseEntity<OrderDTO> changeStatus(@PathVariable Long id,
                                               @RequestBody OrderStatusRequest orderStatusRequest) {
         return ResponseEntity.ok(ownerOrderService.changeStatus(id, orderStatusRequest));
     }

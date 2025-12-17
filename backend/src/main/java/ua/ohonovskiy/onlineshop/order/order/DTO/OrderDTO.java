@@ -1,13 +1,17 @@
 package ua.ohonovskiy.onlineshop.order.order.DTO;
 
 import lombok.Builder;
+import lombok.Data;
+import ua.ohonovskiy.onlineshop.order.order.enums.OrderStatus;
 import ua.ohonovskiy.onlineshop.order.order.model.UserOrderInfo;
-import ua.ohonovskiy.onlineshop.shared.DTO.ProductIdQtyDTO;
+import ua.ohonovskiy.onlineshop.shared.DTO.ProductQtyDTO;
 
 import java.util.List;
 
 @Builder
-public record OrderDTO(
-        List<ProductIdQtyDTO> itemsDTO,
-        UserOrderInfo userInfo
-) {}
+@Data
+public class OrderDTO {
+    List<ProductQtyDTO> itemsDTO;
+    UserOrderInfo userInfo;
+    OrderStatus orderStatus;
+}

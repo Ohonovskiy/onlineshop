@@ -1,10 +1,10 @@
 package ua.ohonovskiy.onlineshop.cart.cart.DTO;
 
-import ua.ohonovskiy.onlineshop.shared.DTO.ProductIdQtyDTO;
+import ua.ohonovskiy.onlineshop.shared.DTO.ProductQtyDTO;
 
 import java.util.List;
 
 public record CartDTO(
-        List<ProductIdQtyDTO> items
+        List<ProductQtyDTO> items
 ) {
 }
