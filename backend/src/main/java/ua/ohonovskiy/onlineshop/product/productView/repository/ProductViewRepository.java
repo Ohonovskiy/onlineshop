@@ -1,6 +1,5 @@
 package ua.ohonovskiy.onlineshop.product.productView.repository;
 
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -10,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ua.ohonovskiy.onlineshop.product.productView.model.ProductView;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Repository
 public interface ProductViewRepository extends JpaRepository<ProductView, Long> {
@@ -22,19 +20,6 @@ public interface ProductViewRepository extends JpaRepository<ProductView, Long> 
         """)
     long countViewsForProductFrom(
             @Param("productId") String productId,
-            @Param("from") LocalDateTime from
-    );
-
-    // Get most viewed product ids from
-    @Query("""
-        SELECT v.product.id
-        FROM ProductView v
-        WHERE v.viewedAt >= :from
-        GROUP BY v.product.id
-        ORDER BY COUNT(v) DESC
-    """)
-    List<String> findPopularProductIdsFrom(
-            Pageable pageable,
             @Param("from") LocalDateTime from
     );
 

@@ -11,7 +11,7 @@ import java.util.List;
 @Builder
 @Data
 public class OrderDTO {
-    List<ProductQtyDTO> itemsDTO;
+    List<ProductQtyDTO> productQtyDTOList;
     UserOrderInfo userInfo;
     OrderStatus orderStatus;
 }

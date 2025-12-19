@@ -11,14 +11,16 @@ import ua.ohonovskiy.onlineshop.product.category.service.CategoryService;
 import ua.ohonovskiy.onlineshop.product.product.DTO.ProductDTO;
 import ua.ohonovskiy.onlineshop.product.product.model.Product;
 import ua.ohonovskiy.onlineshop.product.product.repository.ProductRepository;
+import ua.ohonovskiy.onlineshop.product.productImage.model.ProductImage;
 import ua.ohonovskiy.onlineshop.product.productImage.service.ProductImageService;
 import ua.ohonovskiy.onlineshop.product.productView.service.ProductViewService;
 import ua.ohonovskiy.onlineshop.shop.model.Shop;
 import ua.ohonovskiy.onlineshop.shop.service.ShopService;
 import ua.ohonovskiy.onlineshop.user.service.UserService;
 
-import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -67,14 +69,6 @@ public class ProductService {
         ));
     }
 
-    public List<ProductDTO> getPopular(Integer productsCount) {
-        return toDTO(
-                getAllById(productViewService.getTopMostViewedFrom(
-                        productsCount, LocalDateTime.now().minusDays(7)
-                ))
-        );
-    }
-
     public List<ProductDTO> getTopDiscounted(Integer productsCount) {
         return toDTO(productRepository.findTopDiscounted(
                 PageRequest.of(0, productsCount)
@@ -104,9 +98,7 @@ public class ProductService {
         if (shop == null) {
             throw new RuntimeException("User has no associated shop");
         }
-        Product product = productDTOtoProduct(dto);
-        productRepository.save(product);
-        product.setProductImages(productImageService.addImage(product.getId(), dto.getImageFiles()));
+        productRepository.save(toProduct(dto));
     }
 
     public void updateForCurrentUser(String productId, ProductDTO productDTO) {
@@ -119,15 +111,16 @@ public class ProductService {
     }
 
     public void update(String productId, ProductDTO productDTO) {
-        Product product = productDTOtoProduct(productDTO);
+        Product product = toProduct(productDTO);
         product.setId(productId);
         save(product);
     }
 
     public List<ProductDTO> toDTO(List<Product> products) {
-        List<ProductDTO> dtoList = new ArrayList<>();
-        for (Product p : products) dtoList.add(toDTO(p));
-        return dtoList;
+        return products
+                .stream()
+                .map(this::toDTO)
+                .toList();
     }
 
     public ProductDTO toDTO(Product product) {
@@ -143,16 +136,23 @@ public class ProductService {
                 .build();
     }
 
-    public Product productDTOtoProduct(ProductDTO dto) {
+    public Product toProduct(ProductDTO dto) {
         Category category = categoryService.getById(dto.getCategoryId())
                 .orElseThrow(() -> new RuntimeException("Category not found"));
 
-        return Product.builder()
+
+        Product product = productRepository.save(Product.builder()
                 .name(dto.getName())
                 .description(dto.getDescription())
                 .price(dto.getPrice())
                 .category(category)
-                .build();
+                .build());
+
+        List<ProductImage> productImages = productImageService.addImage(product.getId(), dto.getImageFiles());
+
+        product.setProductImages(productImages);
+
+        return product;
     }
 
     public List<ProductDTO> getAllDTO() {

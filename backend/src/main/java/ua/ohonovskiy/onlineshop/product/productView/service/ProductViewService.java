@@ -1,7 +1,6 @@
 package ua.ohonovskiy.onlineshop.product.productView.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,7 +11,6 @@ import ua.ohonovskiy.onlineshop.product.productView.repository.ProductViewReposi
 import ua.ohonovskiy.onlineshop.user.model.CustomUserDetails;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -28,13 +26,6 @@ public class ProductViewService {
 
     public long getForProductFrom(String productId, LocalDateTime from) {
         return productViewRepository.countViewsForProductFrom(productId, from);
-    }
-
-    public List<String> getTopMostViewedFrom(int amount, LocalDateTime from) {
-        return productViewRepository.findPopularProductIdsFrom(
-                PageRequest.of(0, amount),
-                from
-        );
     }
 
     public void registerView(String productId, CustomUserDetails userDetails) {

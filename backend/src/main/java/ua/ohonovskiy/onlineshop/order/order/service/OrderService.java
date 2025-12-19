@@ -9,7 +9,7 @@ import ua.ohonovskiy.onlineshop.order.order.enums.OrderStatus;
 import ua.ohonovskiy.onlineshop.order.order.model.Order;
 import ua.ohonovskiy.onlineshop.order.order.model.UserOrderInfo;
 import ua.ohonovskiy.onlineshop.order.order.repository.OrderRepository;
-import ua.ohonovskiy.onlineshop.order.orderItem.DTO.ItemQty;
+import ua.ohonovskiy.onlineshop.shared.DTO.ItemQtyDTO;
 import ua.ohonovskiy.onlineshop.order.orderItem.model.OrderItem;
 import ua.ohonovskiy.onlineshop.order.orderItem.service.OrderItemService;
 import ua.ohonovskiy.onlineshop.product.product.model.Product;
@@ -52,7 +52,7 @@ public class OrderService {
         }
 
         List<String> ids = request.items().stream()
-                .map(ItemQty::productId)
+                .map(ItemQtyDTO::productId)
                 .distinct()
                 .toList();
 
@@ -84,24 +84,24 @@ public class OrderService {
 
         BigDecimal total = BigDecimal.ZERO;
 
-        for (ItemQty itemQty : request.items()) {
-            if (itemQty.qty() <= 0) {
+        for (ItemQtyDTO itemQtyDTO : request.items()) {
+            if (itemQtyDTO.qty() <= 0) {
                 throw new IllegalArgumentException("Quantity must be > 0");
             }
 
-            Product p = byId.get(itemQty.productId());
+            Product p = byId.get(itemQtyDTO.productId());
 
             OrderItem item = OrderItem.builder()
                     .product(p)
                     .productName(p.getName())          // snapshot
                     .priceAtPurchase(p.getPrice())     // snapshot
-                    .quantity(itemQty.qty())
+                    .quantity(itemQtyDTO.qty())
                     .build();
 
             order.addItem(item);
 
             total = total.add(
-                    p.getPrice().multiply(BigDecimal.valueOf(itemQty.qty()))
+                    p.getPrice().multiply(BigDecimal.valueOf(itemQtyDTO.qty()))
             );
         }
 
@@ -113,7 +113,7 @@ public class OrderService {
     public OrderDTO toDTO(Order order) {
         return OrderDTO.builder()
                 .orderStatus(order.getStatus())
-                .itemsDTO(orderItemService.toItemDTO(order.getItems()))
+                .productQtyDTOList(orderItemService.toItemDTO(order.getItems()))
                 .userInfo(order.getStatus().equals(OrderStatus.NEW) ? null : order.getUserOrderInfo())
                 .build();
     }
