@@ -3,6 +3,8 @@ package ua.ohonovskiy.onlineshop.order.order.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
+import ua.ohonovskiy.onlineshop.delivery.NP.model.NPParcel;
+import ua.ohonovskiy.onlineshop.delivery.shared.model.Parcel;
 import ua.ohonovskiy.onlineshop.order.order.enums.OrderStatus;
 import ua.ohonovskiy.onlineshop.order.orderItem.model.OrderItem;
 import ua.ohonovskiy.onlineshop.shared.model.SimpleEntityModel;
@@ -33,6 +35,10 @@ public class Order extends SimpleEntityModel {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shop_id", nullable = false)
     private Shop shop;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "parcel_id")
+    private Parcel parcel;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
