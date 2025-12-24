@@ -67,4 +67,16 @@ public class MethodProperties {
 
     @JsonProperty("RecipientsPhone")
     private String RecipientsPhone;
+
+    @JsonProperty("FindByString")
+    private String FindByString;
+
+    @JsonProperty("CityName")
+    private String CityName;
+
+    @JsonProperty("Limit")
+    private String Limit;
+
+    @JsonProperty("Page")
+    private String Page;
 }

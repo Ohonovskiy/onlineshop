@@ -2,12 +2,13 @@ package ua.ohonovskiy.onlineshop.delivery.NP.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import ua.ohonovskiy.onlineshop.delivery.NP.DTO.Settlement;
 import ua.ohonovskiy.onlineshop.delivery.NP.DTO.createTTN.NPCreateTTNResponse;
 import ua.ohonovskiy.onlineshop.delivery.NP.DTO.shared.MethodProperties;
 import ua.ohonovskiy.onlineshop.delivery.NP.service.NPService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/np")
@@ -15,10 +16,19 @@ import ua.ohonovskiy.onlineshop.delivery.NP.service.NPService;
 public class NPController {
     private final NPService npService;
 
+    @GetMapping("/settlements")
+    public ResponseEntity<List<Settlement>> getSettlements(@RequestParam String name) {
+        return ResponseEntity.ok(
+                npService.getSettlements(
+                        MethodProperties.builder().FindByString(name).build()
+                )
+        );
+    }
+
     @PostMapping
     public ResponseEntity<NPCreateTTNResponse> createParcel() {
         return ResponseEntity.ok(
-                npService.createInternetDocument(
+                npService.createWayBill(
                         MethodProperties.builder()
                                 .PayerType("Recipient")
                                 .PaymentMethod("Cash")

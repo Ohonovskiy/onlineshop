@@ -2,15 +2,17 @@ package ua.ohonovskiy.onlineshop.delivery.NP.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import ua.ohonovskiy.onlineshop.delivery.NP.DTO.createTTN.NPCreateTTNRequest;
+import ua.ohonovskiy.onlineshop.delivery.NP.DTO.Settlement;
 import ua.ohonovskiy.onlineshop.delivery.NP.DTO.createTTN.NPCreateTTNResponse;
 import ua.ohonovskiy.onlineshop.delivery.NP.DTO.shared.MethodProperties;
+import ua.ohonovskiy.onlineshop.delivery.NP.DTO.shared.NPRequest;
+import ua.ohonovskiy.onlineshop.delivery.NP.DTO.shared.NPResponse;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -23,32 +25,64 @@ public class NPService {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    public NPCreateTTNResponse createInternetDocument(MethodProperties props) {
-        NPCreateTTNRequest request = NPCreateTTNRequest.builder()
+    public List<Settlement> getSettlements(MethodProperties props) {
+        NPResponse<List<Settlement>> resp = sendRequest(
+                "AddressGeneral",
+                "getSettlements",
+                props,
+                new ParameterizedTypeReference<>() {}
+        );
+        return resp.getData();
+    }
+
+//    public List<Settlement> getSettlements(MethodProperties props) {
+//        NPResponse<List<Settlement>> resp = sendRequest(
+//                "AddressGeneral",
+//                "getSettlements",
+//                props,
+//                new ParameterizedTypeReference<>() {}
+//        );
+//        return resp.getData();
+//    }
+
+    public NPCreateTTNResponse createWayBill(MethodProperties props) {
+        NPResponse<List<NPCreateTTNResponse>> resp = sendRequest(
+                "InternetDocument",
+                "save",
+                props,
+                new ParameterizedTypeReference<>() {}
+        );
+        return resp.getData().get(0);
+    }
+
+    private <T> NPResponse<T> sendRequest(
+            String modelName,
+            String calledMethod,
+            MethodProperties props,
+            ParameterizedTypeReference<NPResponse<T>> typeRef
+    ) {
+        NPRequest request = NPRequest.builder()
                 .apiKey(API_KEY)
-                .modelName("InternetDocument")
-                .calledMethod("save")
+                .modelName(modelName)
+                .calledMethod(calledMethod)
                 .methodProperties(props)
                 .build();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpEntity<NPCreateTTNRequest> entity = new HttpEntity<>(request, headers);
+        HttpEntity<NPRequest> entity = new HttpEntity<>(request, headers);
 
-        ResponseEntity<NPCreateTTNResponse> response = restTemplate.postForEntity(
+        ResponseEntity<NPResponse<T>> response = restTemplate.exchange(
                 API_URL,
+                HttpMethod.POST,
                 entity,
-                NPCreateTTNResponse.class
+                typeRef
         );
 
-        NPCreateTTNResponse body = response.getBody();
-
-        if (body == null || !body.isSuccess()) {
-            throw new IllegalStateException(
-                    "NP error: " + (body != null ? body.getErrors() : "empty response")
-            );
-        }
+        NPResponse<T> body = response.getBody();
+        if (body == null) throw new IllegalStateException("NP error: empty response");
+        if (!body.isSuccess()) throw new IllegalStateException("NP error: " + body.getErrors());
 
         return body;
     }
