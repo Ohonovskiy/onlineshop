@@ -25,7 +25,7 @@ public class NPService {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    public List<Settlement> getSettlements(MethodProperties props) {
+    public List<Settlement> getSettlementsByName(MethodProperties props) {
         NPResponse<List<Settlement>> resp = sendRequest(
                 "AddressGeneral",
                 "getSettlements",
@@ -35,15 +35,8 @@ public class NPService {
         return resp.getData();
     }
 
-//    public List<Settlement> getSettlements(MethodProperties props) {
-//        NPResponse<List<Settlement>> resp = sendRequest(
-//                "AddressGeneral",
-//                "getSettlements",
-//                props,
-//                new ParameterizedTypeReference<>() {}
-//        );
-//        return resp.getData();
-//    }
+
+
 
     public NPCreateTTNResponse createWayBill(MethodProperties props) {
         NPResponse<List<NPCreateTTNResponse>> resp = sendRequest(
@@ -58,7 +51,7 @@ public class NPService {
     private <T> NPResponse<T> sendRequest(
             String modelName,
             String calledMethod,
-            MethodProperties props,
+            Object props,
             ParameterizedTypeReference<NPResponse<T>> typeRef
     ) {
         NPRequest request = NPRequest.builder()
@@ -71,19 +64,16 @@ public class NPService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpEntity<NPRequest> entity = new HttpEntity<>(request, headers);
-
         ResponseEntity<NPResponse<T>> response = restTemplate.exchange(
                 API_URL,
                 HttpMethod.POST,
-                entity,
+                new HttpEntity<>(request, headers),
                 typeRef
         );
 
         NPResponse<T> body = response.getBody();
         if (body == null) throw new IllegalStateException("NP error: empty response");
         if (!body.isSuccess()) throw new IllegalStateException("NP error: " + body.getErrors());
-
         return body;
     }
 }

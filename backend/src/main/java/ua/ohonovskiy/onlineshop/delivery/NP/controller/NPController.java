@@ -19,7 +19,7 @@ public class NPController {
     @GetMapping("/settlements")
     public ResponseEntity<List<Settlement>> getSettlements(@RequestParam String name) {
         return ResponseEntity.ok(
-                npService.getSettlements(
+                npService.getSettlementsByName(
                         MethodProperties.builder().FindByString(name).build()
                 )
         );
