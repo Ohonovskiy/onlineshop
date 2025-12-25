@@ -3,6 +3,8 @@ package ua.ohonovskiy.onlineshop.user.model;
 import jakarta.persistence.*;
 import lombok.*;
 import ua.ohonovskiy.onlineshop.cart.cart.model.Cart;
+import ua.ohonovskiy.onlineshop.delivery.NP.DTO.createTTN.model.RecipientInfo;
+import ua.ohonovskiy.onlineshop.delivery.NP.DTO.createTTN.model.SenderInfo;
 import ua.ohonovskiy.onlineshop.order.order.model.Order;
 import ua.ohonovskiy.onlineshop.shop.model.Shop;
 import ua.ohonovskiy.onlineshop.user.enums.Role;
@@ -37,6 +39,10 @@ public class User extends SimpleEntityModel {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<Order> orders = new ArrayList<>();
+
+    private SenderInfo senderInfo;
+
+    private RecipientInfo recipientInfo;
 
     @Enumerated(value = EnumType.STRING)
     @Builder.Default

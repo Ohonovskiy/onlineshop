@@ -1,17 +1,16 @@
-package ua.ohonovskiy.onlineshop.delivery.NP.DTO.createTTN.enums;
-
+package ua.ohonovskiy.onlineshop.delivery.NP.enums.parcel;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
-public enum PayerType {
+public enum CargoType {
 
-    SENDER("Sender"),
-    RECIPIENT("Recipient"),
-    THIRD_PERSON("ThirdPerson");
+    CARGO("Cargo"),
+    PARCEL("Parcel"),
+    DOCUMENTS("Documents");
 
     private final String apiValue;
 
-    PayerType(String apiValue) {
+    CargoType(String apiValue) {
         this.apiValue = apiValue;
     }
 

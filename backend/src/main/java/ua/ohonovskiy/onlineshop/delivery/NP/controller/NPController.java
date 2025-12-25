@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ua.ohonovskiy.onlineshop.delivery.NP.DTO.Settlement;
 import ua.ohonovskiy.onlineshop.delivery.NP.DTO.createTTN.NPCreateTTNResponse;
-import ua.ohonovskiy.onlineshop.delivery.NP.DTO.shared.MethodProperties;
+import ua.ohonovskiy.onlineshop.delivery.NP.DTO.properties.MethodProperties;
 import ua.ohonovskiy.onlineshop.delivery.NP.service.NPService;
 
 import java.util.List;

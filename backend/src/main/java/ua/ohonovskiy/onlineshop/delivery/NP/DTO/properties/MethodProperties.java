@@ -1,4 +1,4 @@
-package ua.ohonovskiy.onlineshop.delivery.NP.DTO.shared;
+package ua.ohonovskiy.onlineshop.delivery.NP.DTO.properties;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

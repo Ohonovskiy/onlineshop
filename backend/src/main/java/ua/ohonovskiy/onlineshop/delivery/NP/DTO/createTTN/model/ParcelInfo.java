@@ -3,8 +3,8 @@ package ua.ohonovskiy.onlineshop.delivery.NP.DTO.createTTN.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
-import ua.ohonovskiy.onlineshop.delivery.NP.DTO.createTTN.enums.CargoType;
-import ua.ohonovskiy.onlineshop.delivery.NP.DTO.createTTN.enums.ServiceType;
+import ua.ohonovskiy.onlineshop.delivery.NP.enums.parcel.CargoType;
+import ua.ohonovskiy.onlineshop.delivery.NP.enums.parcel.ServiceType;
 
 @Data
 @Builder

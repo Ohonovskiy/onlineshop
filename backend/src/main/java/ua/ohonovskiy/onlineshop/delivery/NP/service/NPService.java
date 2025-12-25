@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import ua.ohonovskiy.onlineshop.delivery.NP.DTO.Settlement;
 import ua.ohonovskiy.onlineshop.delivery.NP.DTO.createTTN.NPCreateTTNResponse;
-import ua.ohonovskiy.onlineshop.delivery.NP.DTO.shared.MethodProperties;
+import ua.ohonovskiy.onlineshop.delivery.NP.DTO.properties.MethodProperties;
 import ua.ohonovskiy.onlineshop.delivery.NP.DTO.shared.NPRequest;
 import ua.ohonovskiy.onlineshop.delivery.NP.DTO.shared.NPResponse;
 

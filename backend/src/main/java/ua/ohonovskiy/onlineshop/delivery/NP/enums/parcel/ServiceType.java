@@ -1,4 +1,4 @@
-package ua.ohonovskiy.onlineshop.delivery.NP.DTO.createTTN.enums;
+package ua.ohonovskiy.onlineshop.delivery.NP.enums.parcel;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
